@@ -34,9 +34,10 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${fraunces.variable} ${inter.variable} ${jetBrainsMono.variable} h-full antialiased dark`}
+      className={`${fraunces.variable} ${inter.variable} ${jetBrainsMono.variable} antialiased`}
+      suppressHydrationWarning
     >
-      <body className="min-h-full bg-bg-base text-text-primary selection:bg-accent/30">
+      <body className="bg-bg-base text-text-primary selection:bg-accent/30">
         <AuthProvider>
           {children}
         </AuthProvider>

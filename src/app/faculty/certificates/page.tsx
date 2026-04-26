@@ -47,7 +47,7 @@ export default function FacultyCertificatesPage() {
         <div>
           <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter leading-[0.85] mb-6">
             AUDIT<br/>
-            <span className="text-red-500">QUEUE</span>
+            <span className="text-accent">QUEUE</span>
           </h1>
           <div className="flex items-center gap-4">
             <div className="relative">
@@ -58,20 +58,20 @@ export default function FacultyCertificatesPage() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-400" />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-secondary" />
             </div>
           </div>
         </div>
 
-        <div className="flex items-center gap-2 bg-white border-4 border-zinc-200 p-1.5 rounded-xl">
+        <div className="flex items-center gap-2 bg-bg-surface border-4 border-border p-1.5 rounded-xl">
           {["All", "Verified", "Pending", "Rejected"].map(s => (
             <button
               key={s}
               onClick={() => setStatusFilter(s)}
               className={`px-4 py-2 rounded-lg transition-all font-black uppercase tracking-widest text-xs ${
                 statusFilter === s 
-                  ? "bg-bg-dark text-white" 
-                  : "text-zinc-500 hover:bg-zinc-100"
+                  ? "bg-accent text-[#09090b]" 
+                  : "text-text-secondary hover:bg-bg-base hover:text-text-primary"
               }`}
             >
               {s}
@@ -80,41 +80,41 @@ export default function FacultyCertificatesPage() {
         </div>
       </div>
 
-      <div className="border-3 border-bg-dark rounded-2xl p-0 overflow-hidden bg-white">
+      <div className="border-3 border-border rounded-2xl p-0 overflow-hidden bg-bg-surface">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="border-b-4 border-zinc-200 bg-zinc-50">
-              <th className="px-6 py-4 text-sm font-black uppercase tracking-widest text-zinc-500">Student</th>
-              <th className="px-6 py-4 text-sm font-black uppercase tracking-widest text-zinc-500">Certificate</th>
-              <th className="px-6 py-4 text-sm font-black uppercase tracking-widest text-zinc-500">Status</th>
-              <th className="px-6 py-4 text-sm font-black uppercase tracking-widest text-zinc-500 text-right">Action</th>
+            <tr className="border-b-4 border-border bg-bg-base">
+              <th className="px-6 py-4 text-sm font-black uppercase tracking-widest text-text-secondary">Student</th>
+              <th className="px-6 py-4 text-sm font-black uppercase tracking-widest text-text-secondary">Certificate</th>
+              <th className="px-6 py-4 text-sm font-black uppercase tracking-widest text-text-secondary">Status</th>
+              <th className="px-6 py-4 text-sm font-black uppercase tracking-widest text-text-secondary text-right">Action</th>
             </tr>
           </thead>
-          <tbody className="divide-y-2 divide-zinc-100">
+          <tbody className="divide-y-2 divide-border">
             {filtered.map((cert) => {
               const isVerified = cert.status === "verified";
               const isPending = cert.status === "pending";
               return (
-                <tr key={cert.id} className="group hover:bg-zinc-50 transition-colors cursor-pointer">
+                <tr key={cert.id} className="group hover:bg-accent transition-colors cursor-pointer">
                   <td className="px-6 py-5">
-                    <p className="font-black text-lg text-bg-dark uppercase tracking-tight group-hover:underline decoration-3 underline-offset-4">{cert.studentName}</p>
-                    <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest">{cert.rollNo} • Sec {cert.section}</p>
+                    <p className="font-black text-lg text-text-primary group-hover:text-[#09090b] uppercase tracking-tight group-hover:underline decoration-3 underline-offset-4">{cert.studentName}</p>
+                    <p className="text-xs font-bold text-text-secondary group-hover:text-[#09090b]/80 uppercase tracking-widest">{cert.rollNo} • Sec {cert.section}</p>
                   </td>
                   <td className="px-6 py-5">
-                    <p className="font-black text-lg text-bg-dark uppercase tracking-tight group-hover:underline decoration-3 underline-offset-4">{cert.certName}</p>
-                    <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest">{cert.issuer}</p>
+                    <p className="font-black text-lg text-text-primary group-hover:text-[#09090b] uppercase tracking-tight group-hover:underline decoration-3 underline-offset-4">{cert.certName}</p>
+                    <p className="text-xs font-bold text-text-secondary group-hover:text-[#09090b]/80 uppercase tracking-widest">{cert.issuer}</p>
                   </td>
                   <td className="px-6 py-5">
                     <div className={`inline-flex items-center px-3 py-1.5 rounded-full border-2 text-xs font-black uppercase tracking-widest ${
-                      isVerified ? "bg-green-100 text-green-700 border-green-700" :
-                      isPending ? "bg-yellow-100 text-yellow-700 border-yellow-500" :
-                      "bg-red-100 text-red-700 border-red-700"
+                      isVerified ? "bg-green-500/10 text-green-600 border-green-500/20 group-hover:bg-[#09090b] group-hover:text-green-400 group-hover:border-[#09090b]" :
+                      isPending ? "bg-yellow-500/10 text-yellow-600 border-yellow-500/20 group-hover:bg-[#09090b] group-hover:text-yellow-400 group-hover:border-[#09090b]" :
+                      "bg-red-500/10 text-red-600 border-red-500/20 group-hover:bg-[#09090b] group-hover:text-red-400 group-hover:border-[#09090b]"
                     }`}>
                       {cert.status}
                     </div>
                   </td>
                   <td className="px-6 py-5 text-right">
-                    <Link href={`/faculty/certificates/${cert.id}`} className="inline-flex p-3 border-2 border-zinc-200 rounded-xl hover:bg-bg-dark hover:border-bg-dark hover:text-white transition-all text-bg-dark bg-white">
+                    <Link href={`/faculty/certificates/${cert.id}`} className="inline-flex p-3 border-2 border-border rounded-xl hover:bg-[#09090b] hover:border-[#09090b] hover:text-white transition-all text-text-primary bg-bg-base group-hover:border-[#09090b]">
                       <ExternalLink className="w-5 h-5" />
                     </Link>
                   </td>

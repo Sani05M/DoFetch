@@ -51,26 +51,26 @@ export default function StudentLoginPage() {
   return (
     <div className="min-h-screen bg-bg-surface flex flex-col md:flex-row font-sans selection:bg-accent selection:text-bg-dark">
       {/* Left side: Form */}
-      <div className="w-full md:w-[45%] bg-white p-8 md:p-16 flex flex-col justify-center border-r-4 border-zinc-200">
+      <div className="w-full md:w-[45%] bg-bg-surface p-8 md:p-16 flex flex-col justify-center border-r-4 border-border">
         <div className="max-w-md w-full mx-auto">
           <Link href="/" className="inline-flex items-center gap-2 mb-12">
             <div className="w-8 h-8 bg-accent rounded-lg flex items-center justify-center transform rotate-45">
               <Zap className="w-4 h-4 text-bg-dark -rotate-45 fill-current" />
             </div>
-            <span className="font-black text-2xl tracking-tighter uppercase">ADAMAS REGISTRY</span>
+            <span className="font-black text-2xl tracking-tighter uppercase text-text-primary">ADAMAS REGISTRY</span>
           </Link>
 
-          <h1 className="text-5xl font-black uppercase tracking-tighter leading-none mb-4">
+          <h1 className="text-5xl font-black uppercase tracking-tighter leading-none mb-4 text-text-primary">
             STUDENT<br />
-            <span className="text-zinc-400">PORTAL</span>
+            <span className="text-text-secondary">PORTAL</span>
           </h1>
-          <p className="text-zinc-500 font-bold mb-10 text-sm uppercase tracking-widest">
+          <p className="text-text-secondary font-bold mb-10 text-sm uppercase tracking-widest">
             Enter your credentials to access your vault
           </p>
 
           <form onSubmit={handleLogin} className="space-y-6">
             <div className="space-y-2">
-              <label className="text-xs font-black uppercase tracking-widest text-zinc-500 ml-2">University Email</label>
+              <label className="text-xs font-black uppercase tracking-widest text-text-secondary ml-2">University Email</label>
               <input 
                 type="email" 
                 value={email}
@@ -83,7 +83,7 @@ export default function StudentLoginPage() {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label className="text-xs font-black uppercase tracking-widest text-zinc-500 ml-2">Batch</label>
+                <label className="text-xs font-black uppercase tracking-widest text-text-secondary ml-2">Batch</label>
                 <CustomSelect 
                   options={BATCH_OPTIONS}
                   value={batch}
@@ -92,7 +92,7 @@ export default function StudentLoginPage() {
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-xs font-black uppercase tracking-widest text-zinc-500 ml-2">Department</label>
+                <label className="text-xs font-black uppercase tracking-widest text-text-secondary ml-2">Department</label>
                 <CustomSelect 
                   options={DEPT_OPTIONS}
                   value={dept}
@@ -104,7 +104,7 @@ export default function StudentLoginPage() {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label className="text-xs font-black uppercase tracking-widest text-zinc-500 ml-2">Roll Number</label>
+                <label className="text-xs font-black uppercase tracking-widest text-text-secondary ml-2">Roll Number</label>
                 <input 
                   type="text" 
                   value={rollNo}
@@ -115,7 +115,7 @@ export default function StudentLoginPage() {
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-xs font-black uppercase tracking-widest text-zinc-500 ml-2">Section</label>
+                <label className="text-xs font-black uppercase tracking-widest text-text-secondary ml-2">Section</label>
                 <input 
                   type="text" 
                   value={section}
@@ -128,7 +128,7 @@ export default function StudentLoginPage() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-xs font-black uppercase tracking-widest text-zinc-500 ml-2">Registration Number</label>
+              <label className="text-xs font-black uppercase tracking-widest text-text-secondary ml-2">Registration Number</label>
               <input 
                 type="text" 
                 value={regNo}
@@ -140,7 +140,7 @@ export default function StudentLoginPage() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-xs font-black uppercase tracking-widest text-zinc-500 ml-2">Secure Password</label>
+              <label className="text-xs font-black uppercase tracking-widest text-text-secondary ml-2">Secure Password</label>
               <input 
                 type="password" 
                 value={password}
@@ -151,15 +151,15 @@ export default function StudentLoginPage() {
               />
             </div>
 
-            <button type="submit" className="w-full btn-primary py-4 text-lg mt-4 shadow-[4px_4px_0_#09090b]">
+            <button type="submit" className="w-full btn-primary py-4 text-lg mt-4 shadow-[4px_4px_0_#09090b] hover:translate-y-[2px] hover:shadow-[2px_2px_0_#09090b] transition-all">
               Authenticate
               <ArrowRight className="w-5 h-5" />
             </button>
           </form>
 
           <div className="mt-12 text-center">
-            <p className="text-xs font-bold text-zinc-400 uppercase tracking-widest">
-              Secured by <span className="text-bg-dark font-black">Adamas Cryptography</span>
+            <p className="text-xs font-bold text-text-secondary uppercase tracking-widest">
+              Secured by <span className="text-text-primary font-black">Adamas Cryptography</span>
             </p>
           </div>
         </div>
@@ -170,14 +170,14 @@ export default function StudentLoginPage() {
         <div className="absolute inset-0 bg-dot-pattern opacity-10 mix-blend-overlay" />
         
         <div className="relative z-10 max-w-lg w-full">
-          <div className="bento-card bg-white p-12 text-center shadow-2xl rotate-3 hover:rotate-0 transition-transform duration-500">
-            <div className="w-16 h-16 bg-bg-dark text-white rounded-2xl flex items-center justify-center mx-auto mb-8">
+          <div className="bento-card bg-bg-surface text-text-primary p-12 text-center shadow-2xl rotate-3 hover:rotate-0 transition-transform duration-500">
+            <div className="w-16 h-16 bg-bg-dark text-text-on-dark rounded-2xl flex items-center justify-center mx-auto mb-8">
               <Lock className="w-8 h-8" />
             </div>
             <h2 className="text-4xl font-black uppercase tracking-tighter mb-4">
               YOUR RECORDS, SECURED.
             </h2>
-            <p className="text-zinc-500 font-bold text-sm uppercase tracking-widest mb-8">
+            <p className="text-text-secondary font-bold text-sm uppercase tracking-widest mb-8">
               Access your digital transcripts, verify artifacts, and manage your academic portfolio in one secure vault.
             </p>
             
@@ -187,7 +187,7 @@ export default function StudentLoginPage() {
                 "Cryptographic Verification",
                 "Global Sharing Links"
               ].map((item, i) => (
-                <div key={i} className="bg-zinc-50 border-2 border-zinc-200 rounded-xl p-4 flex items-center gap-3">
+                <div key={i} className="bg-bg-base border-2 border-border rounded-xl p-4 flex items-center gap-3">
                   <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" />
                   <span className="font-black text-sm uppercase tracking-tight">{item}</span>
                 </div>

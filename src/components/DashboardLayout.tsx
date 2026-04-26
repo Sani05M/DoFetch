@@ -4,7 +4,8 @@ import React, { useEffect } from "react";
 import { useAuth, Role } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Zap, LogOut, LayoutGrid, Plus, ShieldCheck } from "lucide-react";
+import { Zap, LogOut, LayoutGrid, Plus, ShieldCheck, UserCircle } from "lucide-react";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -25,8 +26,8 @@ export function DashboardLayout({ children, allowedRole }: DashboardLayoutProps)
 
   if (isLoading || !user || user.role !== allowedRole) {
     return (
-      <div className="min-h-screen bg-white flex flex-col items-center justify-center">
-        <div className="w-16 h-16 border-8 border-zinc-100 border-t-accent rounded-full animate-spin" />
+      <div className="min-h-screen bg-bg-base flex flex-col items-center justify-center">
+        <div className="w-16 h-16 border-8 border-bg-surface border-t-accent rounded-full animate-spin" />
       </div>
     );
   }
@@ -37,9 +38,9 @@ export function DashboardLayout({ children, allowedRole }: DashboardLayoutProps)
   };
 
   return (
-    <div className="min-h-screen bg-[#fafafa] text-bg-dark font-sans selection:bg-accent selection:text-bg-dark pb-20">
+    <div className="min-h-screen bg-bg-base text-text-primary font-sans selection:bg-accent selection:text-bg-dark">
       {/* Same Navbar as Landing Page but for Dashboards */}
-      <nav className="sticky top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-zinc-200">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-bg-surface/80 backdrop-blur-md border-b border-border">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link href={user.role === "student" ? "/student/dashboard" : "/faculty/dashboard"} className="flex items-center gap-2 group">
             <div className="w-7 h-7 bg-accent rounded-md flex items-center justify-center transform rotate-45 group-hover:bg-bg-dark transition-colors">
@@ -63,12 +64,19 @@ export function DashboardLayout({ children, allowedRole }: DashboardLayoutProps)
             )}
           </div>
 
-          <div className="flex items-center gap-4">
-            <div className="hidden md:flex items-center gap-2 px-3 py-1 bg-white rounded-full text-xs font-black uppercase tracking-widest border border-zinc-200">
-              <span className="w-2.5 h-2.5 rounded-full bg-green-500" />
-              {user.role === "faculty" ? "Authority Active" : "Student Node"}
+          <div className="flex items-center gap-3">
+            <ThemeToggle />
+            <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-bg-surface rounded-full text-xs font-black uppercase tracking-widest border border-border">
+              <span className="w-2.5 h-2.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]" />
+              <span className="text-text-primary">{user.role === "faculty" ? "Authority Active" : "Student Node"}</span>
             </div>
-            <button onClick={handleLogout} className="bg-bg-dark text-white px-5 py-2 rounded-full text-xs font-black uppercase tracking-widest hover:-translate-y-0.5 hover:shadow-lg transition-all flex items-center gap-2">
+            <Link 
+              href={user.role === "faculty" ? "/faculty/profile" : "/student/profile"}
+              className="p-2 rounded-full hover:bg-bg-surface transition-colors border border-transparent hover:border-border"
+            >
+              <UserCircle className="w-5 h-5 text-text-secondary hover:text-text-primary transition-colors" />
+            </Link>
+            <button onClick={handleLogout} className="bg-bg-dark text-text-on-dark px-5 py-2 rounded-full text-xs font-black uppercase tracking-widest hover:-translate-y-0.5 hover:shadow-lg transition-all flex items-center gap-2 border-2 border-transparent hover:border-border ml-1">
               <LogOut className="w-4 h-4" />
               Logout
             </button>
@@ -76,7 +84,7 @@ export function DashboardLayout({ children, allowedRole }: DashboardLayoutProps)
         </div>
       </nav>
       
-      <main className="max-w-6xl mx-auto px-6 pt-12">
+      <main className="max-w-6xl mx-auto px-6 pt-24 pb-20">
         {children}
       </main>
     </div>

@@ -17,9 +17,9 @@ export default function StudentDashboard() {
   const pendingCount = certificates.filter(c => c.status === "pending").length;
 
   const stats = [
-    { label: "Total Artifacts", count: certificates.length, icon: <LayoutGrid />, color: "bg-zinc-100 border-zinc-200" },
+    { label: "Total Artifacts", count: certificates.length, icon: <LayoutGrid />, color: "bg-bg-surface border-border" },
     { label: "Verified Syncs", count: verifiedCount, icon: <CheckCircle2 />, color: "bg-accent border-yellow-400" },
-    { label: "Pending Nodes", count: pendingCount, icon: <Clock />, color: "bg-bg-dark text-white border-bg-dark" },
+    { label: "Pending Nodes", count: pendingCount, icon: <Clock />, color: "bg-bg-dark text-text-on-dark border-text-primary" },
   ];
 
   return (
@@ -27,7 +27,7 @@ export default function StudentDashboard() {
       {/* Hero Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-zinc-100 rounded-full text-xs font-bold mb-4 border border-zinc-200">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-bg-surface rounded-full text-xs font-bold mb-4 border border-border">
             <Zap className="w-3 h-3 text-accent fill-current" />
             <span>Institutional Mesh Active</span>
           </div>
@@ -52,9 +52,9 @@ export default function StudentDashboard() {
               : "/student/certificates?filter=pending";
               
           return (
-            <Link href={href} key={i} className={`bento-card flex flex-col justify-between h-48 border-3 hover:-translate-y-1 hover:shadow-[6px_6px_0_#09090b] shadow-[4px_4px_0_#09090b] transition-all cursor-pointer ${stat.color}`}>
+            <Link href={href} key={i} className={`bento-card flex flex-col justify-between h-48 border-3 hover:-translate-y-1 hover:shadow-[6px_6px_0_var(--color-text-primary)] shadow-[4px_4px_0_var(--color-text-primary)] transition-all cursor-pointer ${stat.color}`}>
               <div className="flex items-center justify-between">
-                <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-bg-dark shadow-sm border-2 border-zinc-200">
+                <div className="w-12 h-12 bg-bg-surface rounded-xl flex items-center justify-center text-text-primary shadow-sm border-2 border-border">
                   {React.cloneElement(stat.icon as React.ReactElement<{ className?: string }>, { className: "w-6 h-6" })}
                 </div>
                 <ArrowUpRight className="w-6 h-6 opacity-30 group-hover:opacity-100 transition-opacity" />

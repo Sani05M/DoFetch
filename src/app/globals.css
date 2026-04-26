@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
   --color-bg-base: #fafafa;
@@ -24,6 +25,24 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+  }
+  
+  /* Dark Mode Variables */
+  .dark {
+    --color-bg-base: #09090b;
+    --color-bg-surface: #121214;
+    --color-bg-dark: #fafafa; /* Inverted so dark becomes light */
+    --color-text-primary: #ffffff;
+    --color-text-secondary: #a1a1aa;
+    --color-text-on-dark: #09090b;
+    
+    --color-border: #27272a;
+    --color-border-hover: #fafafa;
+  }
+
+  html.dark body {
+    background-color: var(--color-bg-base);
+    color: var(--color-text-primary);
   }
   
   body {
@@ -59,7 +78,7 @@
 
 @utility btn-primary {
   background-color: var(--color-accent);
-  color: var(--color-bg-dark);
+  color: #09090b;
   padding: 1rem 2rem;
   border-radius: 9999px;
   font-weight: 900;
@@ -71,35 +90,35 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  border: 3px solid var(--color-bg-dark);
-  box-shadow: 4px 4px 0px var(--color-bg-dark);
+  border: 3px solid #09090b;
+  box-shadow: 4px 4px 0px #09090b;
 
   &:hover {
     transform: translate(-2px, -2px);
-    box-shadow: 6px 6px 0px var(--color-bg-dark);
+    box-shadow: 6px 6px 0px #09090b;
     background-color: var(--color-accent-hover);
   }
   
   &:active {
     transform: translate(2px, 2px);
-    box-shadow: 0px 0px 0px var(--color-bg-dark);
+    box-shadow: 0px 0px 0px #09090b;
   }
 }
 
 @utility input-field {
   width: 100%;
-  background-color: #fafafa;
+  background-color: var(--color-bg-base);
   border: 2px solid var(--color-border);
   border-radius: 1rem;
   padding: 1rem 1.5rem;
-  color: var(--color-bg-dark);
+  color: var(--color-text-primary);
   font-weight: 700;
   transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
 
   &:focus {
     outline: none;
     border-color: var(--color-accent);
-    background-color: #ffffff;
+    background-color: var(--color-bg-surface);
     box-shadow: 0 0 0 4px rgba(253, 224, 71, 0.2);
   }
   

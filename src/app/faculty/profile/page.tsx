@@ -1,140 +1,111 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { useAuth } from "@/context/AuthContext";
-import { 
-  User, 
-  Mail, 
-  Shield, 
-  Layers, 
-  LogOut,
-  Camera,
-  Settings
-} from "lucide-react";
+import { UserCircle, Save, Mail, Briefcase, Shield, Layers, Settings } from "lucide-react";
 
 export default function FacultyProfilePage() {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
+  
+  // Local state for editing profile
+  const [name, setName] = useState(user?.name || "Faculty Name");
+  const [email, setEmail] = useState(user?.email || "faculty@adamas.edu");
+  
+  const [isSaving, setIsSaving] = useState(false);
 
-  if (!user) return null;
+  const handleSave = () => {
+    setIsSaving(true);
+    setTimeout(() => setIsSaving(false), 1000);
+  };
 
   return (
     <DashboardLayout allowedRole="faculty">
-      <div className="max-w-3xl mx-auto space-y-10">
-        <div>
-          <h1 className="text-3xl font-display italic text-text-primary">Faculty Profile</h1>
-          <p className="text-text-secondary mt-1">Manage your academic credentials and sections.</p>
+      <div className="max-w-3xl mx-auto">
+        <div className="flex items-center gap-4 mb-8">
+          <div className="w-16 h-16 bg-accent rounded-2xl flex items-center justify-center transform -rotate-3 border-2 border-bg-dark shadow-[4px_4px_0_#09090b]">
+            <Shield className="w-8 h-8 text-bg-dark" />
+          </div>
+          <div>
+            <h1 className="text-4xl font-black uppercase tracking-tighter text-text-primary">FACULTY PROFILE</h1>
+            <p className="text-text-secondary font-bold text-sm uppercase tracking-widest">
+              Manage authority details and preferences
+            </p>
+          </div>
         </div>
 
-        <div className="bg-bg-surface border border-border rounded-2xl overflow-hidden">
-          {/* Header/Cover */}
-          <div className="h-32 bg-accent/10 border-b border-border relative">
-            <div className="absolute -bottom-12 left-8">
-              <div className="relative group">
-                <div className="w-24 h-24 rounded-2xl bg-bg-surface border-4 border-bg-base flex items-center justify-center text-accent text-3xl font-bold shadow-xl">
-                  {user.name.charAt(0)}
-                </div>
-                <button className="absolute inset-0 bg-black/40 rounded-2xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Camera className="w-6 h-6 text-white" />
-                </button>
+        <div className="bento-card mb-8">
+          <div className="flex items-center gap-2 mb-6 border-b border-border pb-4">
+            <Shield className="w-5 h-5 text-accent" />
+            <h2 className="text-xl font-black uppercase tracking-tight text-text-primary">Authority Identity</h2>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div className="space-y-1">
+              <span className="text-xs font-bold text-text-secondary uppercase tracking-widest">Faculty ID</span>
+              <p className="font-mono font-bold text-text-primary">{user?.facultyId || "FAC-2024-001"}</p>
+            </div>
+            <div className="space-y-1">
+              <span className="text-xs font-bold text-text-secondary uppercase tracking-widest">Department</span>
+              <p className="font-bold flex items-center gap-2 text-text-primary"><Briefcase className="w-4 h-4"/> Computer Science</p>
+            </div>
+            <div className="space-y-1 md:col-span-2">
+              <span className="text-xs font-bold text-text-secondary uppercase tracking-widest">Managed Sections</span>
+              <div className="flex flex-wrap gap-2 mt-2">
+                {(user?.sectionsManaged || ["A", "B"]).map(s => (
+                  <span key={s} className="px-3 py-1 rounded bg-bg-dark text-text-on-dark text-xs font-black uppercase tracking-widest border-2 border-transparent">
+                    Section {s}
+                  </span>
+                ))}
               </div>
             </div>
           </div>
+        </div>
 
-          <div className="pt-16 pb-8 px-8">
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-              <div>
-                <h2 className="text-xl font-medium text-text-primary">{user.name}</h2>
-                <p className="text-sm text-text-muted mt-1">{user.email}</p>
-              </div>
+        <div className="bento-card">
+          <div className="flex items-center gap-2 mb-6 border-b border-border pb-4">
+            <Settings className="w-5 h-5 text-accent" />
+            <h2 className="text-xl font-black uppercase tracking-tight text-text-primary">Profile Details</h2>
+          </div>
+
+          <form onSubmit={(e) => { e.preventDefault(); handleSave(); }} className="space-y-6">
+            <div className="space-y-2">
+              <label className="text-xs font-black uppercase tracking-widest text-text-secondary ml-2">Full Name & Title</label>
+              <input 
+                type="text" 
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="input-field"
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-xs font-black uppercase tracking-widest text-text-secondary ml-2 flex items-center gap-2">
+                <Mail className="w-3 h-3"/> Official Email
+              </label>
+              <input 
+                type="email" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="input-field"
+                required
+              />
+            </div>
+
+            <div className="flex justify-end pt-4">
               <button 
-                onClick={logout}
-                className="flex items-center gap-2 px-4 py-2 bg-accent/10 text-accent border border-accent/20 rounded-lg text-sm hover:bg-accent/20 transition-all"
+                type="submit" 
+                disabled={isSaving}
+                className="btn-primary"
               >
-                <LogOut className="w-4 h-4" />
-                Sign Out
+                {isSaving ? "Updating..." : "Save Preferences"}
+                <Save className="w-4 h-4" />
               </button>
             </div>
-
-            <div className="grid md:grid-cols-2 gap-8 mt-12">
-              <div className="space-y-6">
-                <ProfileItem icon={<Shield className="w-4 h-4" />} label="Faculty ID" value={user.facultyId || "N/A"} />
-                <ProfileItem icon={<Mail className="w-4 h-4" />} label="Official Email" value={user.email} />
-              </div>
-              <div className="space-y-6">
-                <div className="flex gap-4">
-                  <div className="p-2 bg-bg-elevated border border-border rounded-lg text-text-muted shrink-0">
-                    <Layers className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <p className="text-[10px] uppercase tracking-widest text-text-muted mb-2">Managed Sections</p>
-                    <div className="flex flex-wrap gap-2">
-                      {user.sectionsManaged?.map(s => (
-                        <span key={s} className="px-2 py-0.5 rounded bg-bg-elevated border border-border text-[10px] font-mono text-text-primary">
-                          Section {s}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Admin Settings */}
-        <div className="grid md:grid-cols-2 gap-6">
-          <div className="p-6 bg-bg-surface border border-border rounded-2xl">
-            <h3 className="text-sm font-medium text-text-primary mb-4 flex items-center gap-2">
-              <Settings className="w-4 h-4 text-text-muted" />
-              Administrative Controls
-            </h3>
-            <p className="text-xs text-text-muted mb-6">Manage how you interact with student submissions.</p>
-            <div className="space-y-4">
-              <Toggle label="Auto-approve lower tier certs" />
-              <Toggle label="Enable AI rating assistance" checked />
-              <Toggle label="Daily summary email" checked />
-            </div>
-          </div>
-          <div className="p-6 bg-bg-surface border border-border rounded-2xl flex flex-col items-center justify-center text-center space-y-4">
-            <div className="w-12 h-12 rounded-full bg-accent/5 flex items-center justify-center text-accent">
-              <Layers className="w-6 h-6" />
-            </div>
-            <div>
-              <h3 className="text-sm font-medium text-text-primary">Request Section Access</h3>
-              <p className="text-[11px] text-text-muted mt-1">Need to manage a new section? Submit a request to the admin office.</p>
-            </div>
-            <button className="px-4 py-2 bg-bg-elevated border border-border rounded-lg text-xs hover:border-accent/30 hover:text-accent transition-all">
-              Submit Request
-            </button>
-          </div>
+          </form>
         </div>
       </div>
     </DashboardLayout>
-  );
-}
-
-function ProfileItem({ icon, label, value }: { icon: React.ReactNode, label: string, value: string }) {
-  return (
-    <div className="flex gap-4">
-      <div className="p-2 bg-bg-elevated border border-border rounded-lg text-text-muted shrink-0">
-        {icon}
-      </div>
-      <div>
-        <p className="text-[10px] uppercase tracking-widest text-text-muted mb-1">{label}</p>
-        <p className="text-sm text-text-primary font-mono">{value}</p>
-      </div>
-    </div>
-  );
-}
-
-function Toggle({ label, checked = false }: { label: string, checked?: boolean }) {
-  return (
-    <div className="flex items-center justify-between">
-      <span className="text-sm text-text-secondary">{label}</span>
-      <div className={`w-10 h-5 rounded-full p-1 transition-colors ${checked ? 'bg-accent' : 'bg-bg-elevated'}`}>
-        <div className={`w-3 h-3 bg-white rounded-full transition-transform ${checked ? 'translate-x-5' : 'translate-x-0'}`} />
-      </div>
-    </div>
   );
 }

@@ -5,6 +5,7 @@ import { useAuth, Role } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Zap, LogOut, LayoutGrid, Plus, ShieldCheck, UserCircle } from "lucide-react";
+import { motion } from "framer-motion";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 interface DashboardLayoutProps {
@@ -70,16 +71,22 @@ export function DashboardLayout({ children, allowedRole }: DashboardLayoutProps)
               <span className="w-2.5 h-2.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]" />
               <span className="text-text-primary">{user.role === "faculty" ? "Authority Active" : "Student Node"}</span>
             </div>
-            <Link 
-              href={user.role === "faculty" ? "/faculty/profile" : "/student/profile"}
-              className="p-2 rounded-full hover:bg-bg-surface transition-colors border border-transparent hover:border-border"
+            <motion.div whileTap={{ scale: 0.9 }}>
+              <Link 
+                href={user.role === "faculty" ? "/faculty/profile" : "/student/profile"}
+                className="p-2 rounded-full hover:bg-bg-surface transition-colors border border-transparent hover:border-border block"
+              >
+                <UserCircle className="w-5 h-5 text-text-secondary hover:text-text-primary transition-colors" />
+              </Link>
+            </motion.div>
+            <motion.button 
+              whileTap={{ scale: 0.95 }}
+              onClick={handleLogout} 
+              className="bg-bg-dark text-text-on-dark px-5 py-2 rounded-full text-xs font-black uppercase tracking-widest hover:bg-zinc-800 transition-all flex items-center gap-2 border border-border ml-1"
             >
-              <UserCircle className="w-5 h-5 text-text-secondary hover:text-text-primary transition-colors" />
-            </Link>
-            <button onClick={handleLogout} className="bg-bg-dark text-text-on-dark px-5 py-2 rounded-full text-xs font-black uppercase tracking-widest hover:-translate-y-0.5 hover:shadow-lg transition-all flex items-center gap-2 border-2 border-transparent hover:border-border ml-1">
               <LogOut className="w-4 h-4" />
               Logout
-            </button>
+            </motion.button>
           </div>
         </div>
       </nav>

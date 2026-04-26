@@ -21,6 +21,8 @@ import {
   ArrowRight
 } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { motion } from "framer-motion";
+import { AnimatedSection, containerVariants, itemVariants } from "@/components/AnimatedSection";
 
 export default function Home() {
   return (
@@ -47,15 +49,22 @@ export default function Home() {
             <Link href="/login/faculty" className="text-sm font-bold hover:text-accent transition-colors hidden md:block">
               Faculty Login
             </Link>
-            <Link href="/login/student" className="bg-accent text-[#09090b] px-5 py-2 rounded-full text-sm font-black hover:scale-105 transition-transform shadow-[0_4px_14px_0_rgba(253,224,71,0.5)]">
-              Access Vault
-            </Link>
+            <motion.div 
+              whileHover={{ x: -1, y: -1, boxShadow: "6px 6px 0px #09090b" }}
+              whileTap={{ x: 4, y: 4, boxShadow: "0px 0px 0px #09090b" }}
+              transition={{ type: "spring", stiffness: 500, damping: 15 }}
+            >
+              <Link href="/login/student" className="bg-accent text-[#09090b] px-5 py-2 rounded-full text-sm font-black shadow-[4px_4px_0px_#09090b] border-2 border-bg-dark block transition-colors">
+                Access Vault
+              </Link>
+            </motion.div>
           </div>
         </div>
       </nav>
 
       <div className="pt-16">
         {/* Hero Section */}
+        <AnimatedSection>
           <section className="pt-40 pb-20 px-6 text-center max-w-5xl mx-auto">
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-bg-surface rounded-full text-xs font-bold mb-8 border border-border">
               <ShieldCheck className="w-3 h-3 text-accent fill-current" />
@@ -70,12 +79,18 @@ export default function Home() {
               Access, verify, and share your Adamas University transcripts and certificates instantly with our state-of-the-art cryptographic registry.
             </p>
 
-            <Link href="/login/student" className="bg-accent text-[#09090b] px-8 py-4 rounded-full text-lg font-black inline-flex items-center gap-3 hover:scale-105 transition-transform shadow-[0_8px_30px_rgba(253,224,71,0.5)] mb-8">
-              Enter Student Portal
-              <ArrowRight className="w-5 h-5" />
-            </Link>
+            <motion.div
+              whileHover={{ x: -2, y: -2, shadow: "12px 12px 0px #09090b" }}
+              whileTap={{ x: 8, y: 8, shadow: "0px 0px 0px #09090b" }}
+              transition={{ type: "spring", stiffness: 500, damping: 15 }}
+            >
+              <Link href="/login/student" className="bg-accent text-[#09090b] px-8 py-4 rounded-full text-lg font-black inline-flex items-center gap-3 shadow-[8px_8px_0px_#09090b] border-4 border-bg-dark transition-colors">
+                Enter Student Portal
+                <ArrowRight className="w-5 h-5" />
+              </Link>
+            </motion.div>
 
-            <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-bold mt-4">
+            <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-bold mt-12">
               <div className="flex items-center gap-2 px-4 py-2 bg-bg-surface rounded-full border border-border">
                 <Lock className="w-4 h-4 text-green-500" /> End-to-End Encrypted
               </div>
@@ -84,8 +99,10 @@ export default function Home() {
               </div>
             </div>
           </section>
+        </AnimatedSection>
 
-          {/* Floating Dashboard Mockup */}
+        {/* Floating Dashboard Mockup */}
+        <AnimatedSection delay={0.2}>
           <section className="max-w-5xl mx-auto px-6 mb-24 perspective-[2000px]">
             <div className="w-full aspect-[16/9] bg-bg-surface rounded-2xl border-4 border-border shadow-[0_20px_50px_rgba(0,0,0,0.1)] overflow-hidden transform rotate-x-[5deg] hover:rotate-x-0 transition-transform duration-700 ease-out">
               <div className="h-10 bg-bg-base border-b border-border flex items-center px-4 gap-2">
@@ -112,8 +129,10 @@ export default function Home() {
               </div>
             </div>
           </section>
+        </AnimatedSection>
 
-          {/* Trusted By */}
+        {/* Trusted By */}
+        <AnimatedSection delay={0.4}>
           <section className="text-center mb-32 opacity-50">
             <p className="text-xs font-bold uppercase tracking-widest mb-6">Certificates recognized globally by</p>
             <div className="flex flex-wrap items-center justify-center gap-12 grayscale">
@@ -124,6 +143,7 @@ export default function Home() {
               <span className="font-black text-xl">TCS</span>
             </div>
           </section>
+        </AnimatedSection>
 
           <h2 className="text-center text-4xl font-black uppercase tracking-tighter mb-16">
             WITH ADAMAS REGISTRY, YOU CAN

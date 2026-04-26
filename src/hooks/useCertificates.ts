@@ -51,7 +51,17 @@ export function useCertificates() {
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
-      setCertificates(JSON.parse(saved));
+      try {
+        const parsed = JSON.parse(saved);
+        // Migration: Ensure title exists (handle legacy 'name' field if it exists)
+        const migrated = parsed.map((c: any) => ({
+          ...c,
+          title: c.title || c.name || "Untitled Artifact"
+        }));
+        setCertificates(migrated);
+      } catch (e) {
+        setCertificates(INITIAL_CERTS);
+      }
     } else {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_CERTS));
       setCertificates(INITIAL_CERTS);

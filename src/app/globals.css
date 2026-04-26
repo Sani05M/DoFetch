@@ -76,6 +76,33 @@
   }
 }
 
+@utility bento-3d {
+  background-color: var(--color-bg-surface);
+  border-radius: var(--radius-2xl);
+  border: 3px solid #09090b;
+  box-shadow: 6px 6px 0px #09090b;
+  transition: all 0.2s cubic-bezier(0.23, 1, 0.32, 1);
+
+  .dark & {
+    border-color: #fafafa;
+    box-shadow: 6px 6px 0px #fafafa;
+  }
+
+  &:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 8px 8px 0px #09090b;
+  }
+
+  .dark &:hover {
+    box-shadow: 8px 8px 0px #fafafa;
+  }
+
+  &:active {
+    transform: translate(6px, 6px);
+    box-shadow: 0px 0px 0px #09090b;
+  }
+}
+
 @utility btn-primary {
   background-color: var(--color-accent);
   color: #09090b;
@@ -85,7 +112,7 @@
   font-size: 0.875rem;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.1s cubic-bezier(0.23, 1, 0.32, 1);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -93,17 +120,27 @@
   border: 3px solid #09090b;
   box-shadow: 4px 4px 0px #09090b;
 
+  .dark & {
+    border-color: #fafafa;
+    box-shadow: 4px 4px 0px #fafafa;
+  }
+
   &:hover {
     transform: translate(-2px, -2px);
     box-shadow: 6px 6px 0px #09090b;
     background-color: var(--color-accent-hover);
   }
+
+  .dark &:hover {
+    box-shadow: 6px 6px 0px #fafafa;
+  }
   
   &:active {
-    transform: translate(2px, 2px);
+    transform: translate(4px, 4px);
     box-shadow: 0px 0px 0px #09090b;
   }
 }
+
 
 @utility input-field {
   width: 100%;

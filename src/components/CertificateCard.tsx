@@ -1,8 +1,7 @@
-"use client";
-
-import React from "react";
+import { motion } from "framer-motion";
 import { Zap, Download, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { NeoButton } from "./NeoButton";
 
 export interface Certificate {
   id: string;
@@ -20,16 +19,22 @@ export interface Certificate {
 interface CertificateCardProps {
   certificate: Certificate;
   className?: string;
+  onClick?: () => void;
 }
 
-export function CertificateCard({ certificate, className }: CertificateCardProps) {
+export function CertificateCard({ certificate, className, onClick }: CertificateCardProps) {
   const isVerified = certificate.status === "verified" || certificate.status === "approved";
 
   return (
-    <div className={cn(
-      "bento-card group hover:border-bg-dark hover:bg-accent cursor-pointer flex flex-col justify-between h-full",
-      className
-    )}>
+    <motion.div 
+      whileHover={{ translateY: -4 }}
+      whileTap={{ x: 6, y: 6 }}
+      onClick={onClick}
+      className={cn(
+        "bento-3d group hover:bg-accent cursor-pointer flex flex-col justify-between h-full p-8",
+        className
+      )}
+    >
       <div>
         <div className="flex justify-between items-start mb-8">
           <div className="w-16 h-16 bg-bg-dark rounded-2xl flex items-center justify-center text-accent group-hover:bg-white group-hover:text-bg-dark transition-colors border-2 border-bg-dark">
@@ -50,13 +55,15 @@ export function CertificateCard({ certificate, className }: CertificateCardProps
         </h3>
         
         <div className="space-y-2 mb-8">
-          <p className="text-sm font-bold uppercase tracking-widest text-zinc-500 group-hover:text-bg-dark/70">Issued by {certificate.issuer}</p>
-          <p className="text-xs font-black uppercase tracking-widest text-bg-dark">{certificate.issueDate}</p>
+          <p className="text-sm font-bold uppercase tracking-widest text-text-secondary group-hover:text-bg-dark/70">Issued by {certificate.issuer}</p>
+          <p className="text-xs font-black uppercase tracking-widest text-text-primary group-hover:text-bg-dark transition-colors">{certificate.issueDate}</p>
         </div>
       </div>
 
-      <div className="flex items-center gap-4 pt-6 border-t border-zinc-200 group-hover:border-zinc-300 transition-colors">
-        <button 
+      <div className="flex items-center gap-4 pt-6 border-t border-border group-hover:border-bg-dark/20 transition-colors">
+        <NeoButton 
+          variant="secondary"
+          className="flex-1 py-3 text-xs"
           onClick={(e) => {
             e.stopPropagation();
             const content = `Certificate: ${certificate.title}\nIssuer: ${certificate.issuer}\nDate: ${certificate.issueDate}\nStatus: ${certificate.status}`;
@@ -64,27 +71,30 @@ export function CertificateCard({ certificate, className }: CertificateCardProps
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `${certificate.title.replace(/\s+/g, '_')}_Certificate.txt`;
+            const safeTitle = (certificate.title || "Certificate").replace(/\s+/g, '_');
+            a.download = `${safeTitle}_Certificate.txt`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
           }}
-          className="flex-1 bg-bg-dark text-white py-3 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-zinc-800 hover:shadow-lg hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2"
         >
           <Download className="w-4 h-4" />
           Download
-        </button>
-        <button 
+        </NeoButton>
+        <motion.button 
+          whileHover={{ scale: 1.1, rotate: 15 }}
+          whileTap={{ scale: 0.9 }}
           onClick={(e) => {
             e.stopPropagation();
             window.open(`/student/certificates/${certificate.id}`, '_blank');
           }}
-          className="p-3 border-2 border-zinc-200 rounded-xl hover:bg-zinc-50 hover:shadow-md hover:-translate-y-0.5 transition-all text-bg-dark bg-white group-hover:border-zinc-300"
+          className="p-3 border-2 border-border rounded-xl hover:bg-bg-base transition-all text-text-primary bg-bg-surface group-hover:border-bg-dark/20"
         >
           <ExternalLink className="w-5 h-5" />
-        </button>
+        </motion.button>
       </div>
-    </div>
+    </motion.div>
   );
 }
+

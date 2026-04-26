@@ -9,7 +9,7 @@
       "source_file": "/run/media/abhishek/BBC/Projects/Do-Fetch/next.config.ts",
       "source_location": "L1",
       "id": "run_media_abhishek_bbc_projects_do_fetch_next_config_ts",
-      "community": 12,
+      "community": 13,
       "norm_label": "next.config.ts"
     },
     {
@@ -18,7 +18,7 @@
       "source_file": "/run/media/abhishek/BBC/Projects/Do-Fetch/postcss.config.mjs",
       "source_location": "L1",
       "id": "run_media_abhishek_bbc_projects_do_fetch_postcss_config_mjs",
-      "community": 13,
+      "community": 14,
       "norm_label": "postcss.config.mjs"
     },
     {
@@ -27,7 +27,7 @@
       "source_file": "/run/media/abhishek/BBC/Projects/Do-Fetch/eslint.config.mjs",
       "source_location": "L1",
       "id": "run_media_abhishek_bbc_projects_do_fetch_eslint_config_mjs",
-      "community": 14,
+      "community": 15,
       "norm_label": "eslint.config.mjs"
     },
     {
@@ -36,7 +36,7 @@
       "source_file": "/run/media/abhishek/BBC/Projects/Do-Fetch/next-env.d.ts",
       "source_location": "L1",
       "id": "run_media_abhishek_bbc_projects_do_fetch_next_env_d_ts",
-      "community": 15,
+      "community": 16,
       "norm_label": "next-env.d.ts"
     },
     {
@@ -45,7 +45,7 @@
       "source_file": "/run/media/abhishek/BBC/Projects/Do-Fetch/portal/next-env.d.ts",
       "source_location": "L1",
       "id": "run_media_abhishek_bbc_projects_do_fetch_portal_next_env_d_ts",
-      "community": 16,
+      "community": 17,
       "norm_label": "next-env.d.ts"
     },
     {
@@ -72,7 +72,7 @@
       "source_file": "/run/media/abhishek/BBC/Projects/Do-Fetch/src/services/api.ts",
       "source_location": "L1",
       "id": "run_media_abhishek_bbc_projects_do_fetch_src_services_api_ts",
-      "community": 17,
+      "community": 18,
       "norm_label": "api.ts"
     },
     {
@@ -99,7 +99,7 @@
       "source_file": "/run/media/abhishek/BBC/Projects/Do-Fetch/src/components/Navbar.tsx",
       "source_location": "L1",
       "id": "run_media_abhishek_bbc_projects_do_fetch_src_components_navbar_tsx",
-      "community": 18,
+      "community": 19,
       "norm_label": "navbar.tsx"
     },
     {
@@ -115,7 +115,7 @@
       "label": "handleLogout()",
       "file_type": "code",
       "source_file": "/run/media/abhishek/BBC/Projects/Do-Fetch/src/components/DashboardLayout.tsx",
-      "source_location": "L34",
+      "source_location": "L35",
       "id": "dashboardlayout_handlelogout",
       "community": 4,
       "norm_label": "handlelogout()"
@@ -162,8 +162,26 @@
       "source_file": "/run/media/abhishek/BBC/Projects/Do-Fetch/src/components/Dock.tsx",
       "source_location": "L1",
       "id": "run_media_abhishek_bbc_projects_do_fetch_src_components_dock_tsx",
-      "community": 19,
+      "community": 20,
       "norm_label": "dock.tsx"
+    },
+    {
+      "label": "ThemeToggle.tsx",
+      "file_type": "code",
+      "source_file": "/run/media/abhishek/BBC/Projects/Do-Fetch/src/components/ThemeToggle.tsx",
+      "source_location": "L1",
+      "id": "run_media_abhishek_bbc_projects_do_fetch_src_components_themetoggle_tsx",
+      "community": 7,
+      "norm_label": "themetoggle.tsx"
+    },
+    {
+      "label": "ThemeToggle()",
+      "file_type": "code",
+      "source_file": "/run/media/abhishek/BBC/Projects/Do-Fetch/src/components/ThemeToggle.tsx",
+      "source_location": "L6",
+      "id": "themetoggle_themetoggle",
+      "community": 7,
+      "norm_label": "themetoggle()"
     },
     {
       "label": "RatingBadge.tsx",
@@ -171,7 +189,7 @@
       "source_file": "/run/media/abhishek/BBC/Projects/Do-Fetch/src/components/RatingBadge.tsx",
       "source_location": "L1",
       "id": "run_media_abhishek_bbc_projects_do_fetch_src_components_ratingbadge_tsx",
-      "community": 7,
+      "community": 8,
       "norm_label": "ratingbadge.tsx"
     },
     {
@@ -180,7 +198,7 @@
       "source_file": "/run/media/abhishek/BBC/Projects/Do-Fetch/src/components/RatingBadge.tsx",
       "source_location": "L11",
       "id": "ratingbadge_ratingbadge",
-      "community": 7,
+      "community": 8,
       "norm_label": "ratingbadge()"
     },
     {
@@ -189,7 +207,7 @@
       "source_file": "/run/media/abhishek/BBC/Projects/Do-Fetch/src/components/StatCard.tsx",
       "source_location": "L1",
       "id": "run_media_abhishek_bbc_projects_do_fetch_src_components_statcard_tsx",
-      "community": 8,
+      "community": 9,
       "norm_label": "statcard.tsx"
     },
     {
@@ -198,7 +216,7 @@
       "source_file": "/run/media/abhishek/BBC/Projects/Do-Fetch/src/components/StatCard.tsx",
       "source_location": "L15",
       "id": "statcard_statcard",
-      "community": 8,
+      "community": 9,
       "norm_label": "statcard()"
     },
     {
@@ -207,7 +225,7 @@
       "source_file": "/run/media/abhishek/BBC/Projects/Do-Fetch/src/components/Sidebar.tsx",
       "source_location": "L1",
       "id": "run_media_abhishek_bbc_projects_do_fetch_src_components_sidebar_tsx",
-      "community": 20,
+      "community": 21,
       "norm_label": "sidebar.tsx"
     },
     {
@@ -216,7 +234,7 @@
       "source_file": "/run/media/abhishek/BBC/Projects/Do-Fetch/src/app/page.tsx",
       "source_location": "L1",
       "id": "run_media_abhishek_bbc_projects_do_fetch_src_app_page_tsx",
-      "community": 21,
+      "community": 22,
       "norm_label": "page.tsx"
     },
     {
@@ -225,7 +243,7 @@
       "source_file": "/run/media/abhishek/BBC/Projects/Do-Fetch/src/app/layout.tsx",
       "source_location": "L1",
       "id": "run_media_abhishek_bbc_projects_do_fetch_src_app_layout_tsx",
-      "community": 9,
+      "community": 10,
       "norm_label": "layout.tsx"
     },
     {
@@ -234,7 +252,7 @@
       "source_file": "/run/media/abhishek/BBC/Projects/Do-Fetch/src/app/layout.tsx",
       "source_location": "L29",
       "id": "layout_rootlayout",
-      "community": 9,
+      "community": 10,
       "norm_label": "rootlayout()"
     },
     {
@@ -279,7 +297,7 @@
       "source_file": "/run/media/abhishek/BBC/Projects/Do-Fetch/src/app/faculty/dashboard/page.tsx",
       "source_location": "L1",
       "id": "run_media_abhishek_bbc_projects_do_fetch_src_app_faculty_dashboard_page_tsx",
-      "community": 22,
+      "community": 23,
       "norm_label": "page.tsx"
     },
     {
@@ -315,7 +333,7 @@
       "source_file": "/run/media/abhishek/BBC/Projects/Do-Fetch/src/app/faculty/certificates/page.tsx",
       "source_location": "L1",
       "id": "run_media_abhishek_bbc_projects_do_fetch_src_app_faculty_certificates_page_tsx",
-      "community": 23,
+      "community": 24,
       "norm_label": "page.tsx"
     },
     {
@@ -324,7 +342,7 @@
       "source_file": "/run/media/abhishek/BBC/Projects/Do-Fetch/src/app/faculty/certificates/[id]/page.tsx",
       "source_location": "L1",
       "id": "run_media_abhishek_bbc_projects_do_fetch_src_app_faculty_certificates_id_page_tsx",
-      "community": 10,
+      "community": 11,
       "norm_label": "page.tsx"
     },
     {
@@ -333,7 +351,7 @@
       "source_file": "/run/media/abhishek/BBC/Projects/Do-Fetch/src/app/faculty/certificates/[id]/page.tsx",
       "source_location": "L17",
       "id": "page_auditdetailpage",
-      "community": 10,
+      "community": 11,
       "norm_label": "auditdetailpage()"
     },
     {
@@ -342,8 +360,17 @@
       "source_file": "/run/media/abhishek/BBC/Projects/Do-Fetch/src/app/faculty/profile/page.tsx",
       "source_location": "L1",
       "id": "run_media_abhishek_bbc_projects_do_fetch_src_app_faculty_profile_page_tsx",
-      "community": 24,
+      "community": 0,
       "norm_label": "page.tsx"
+    },
+    {
+      "label": "FacultyProfilePage()",
+      "file_type": "code",
+      "source_file": "/run/media/abhishek/BBC/Projects/Do-Fetch/src/app/faculty/profile/page.tsx",
+      "source_location": "L8",
+      "id": "page_facultyprofilepage",
+      "community": 0,
+      "norm_label": "facultyprofilepage()"
     },
     {
       "label": "page.tsx",
@@ -432,8 +459,17 @@
       "source_file": "/run/media/abhishek/BBC/Projects/Do-Fetch/src/app/student/profile/page.tsx",
       "source_location": "L1",
       "id": "run_media_abhishek_bbc_projects_do_fetch_src_app_student_profile_page_tsx",
-      "community": 27,
+      "community": 0,
       "norm_label": "page.tsx"
+    },
+    {
+      "label": "StudentProfilePage()",
+      "file_type": "code",
+      "source_file": "/run/media/abhishek/BBC/Projects/Do-Fetch/src/app/student/profile/page.tsx",
+      "source_location": "L8",
+      "id": "page_studentprofilepage",
+      "community": 0,
+      "norm_label": "studentprofilepage()"
     },
     {
       "label": "utils.ts",
@@ -441,7 +477,7 @@
       "source_file": "/run/media/abhishek/BBC/Projects/Do-Fetch/src/lib/utils.ts",
       "source_location": "L1",
       "id": "run_media_abhishek_bbc_projects_do_fetch_src_lib_utils_ts",
-      "community": 11,
+      "community": 12,
       "norm_label": "utils.ts"
     },
     {
@@ -450,7 +486,7 @@
       "source_file": "/run/media/abhishek/BBC/Projects/Do-Fetch/src/lib/utils.ts",
       "source_location": "L4",
       "id": "utils_cn",
-      "community": 11,
+      "community": 12,
       "norm_label": "cn()"
     }
   ],
@@ -504,10 +540,34 @@
       "target": "page_studentloginpage"
     },
     {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "/run/media/abhishek/BBC/Projects/Do-Fetch/src/app/faculty/profile/page.tsx",
+      "source_location": "L9",
+      "weight": 1.0,
+      "_src": "page_facultyprofilepage",
+      "_tgt": "authcontext_useauth",
+      "source": "authcontext_useauth",
+      "target": "page_facultyprofilepage"
+    },
+    {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "/run/media/abhishek/BBC/Projects/Do-Fetch/src/app/student/profile/page.tsx",
+      "source_location": "L9",
+      "weight": 1.0,
+      "_src": "page_studentprofilepage",
+      "_tgt": "authcontext_useauth",
+      "source": "authcontext_useauth",
+      "target": "page_studentprofilepage"
+    },
+    {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "/run/media/abhishek/BBC/Projects/Do-Fetch/src/components/DashboardLayout.tsx",
-      "source_location": "L34",
+      "source_location": "L35",
       "weight": 1.0,
       "_src": "run_media_abhishek_bbc_projects_do_fetch_src_components_dashboardlayout_tsx",
       "_tgt": "dashboardlayout_handlelogout",
@@ -537,6 +597,18 @@
       "_tgt": "certificatecard_certificatecard",
       "source": "run_media_abhishek_bbc_projects_do_fetch_src_components_certificatecard_tsx",
       "target": "certificatecard_certificatecard",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/run/media/abhishek/BBC/Projects/Do-Fetch/src/components/ThemeToggle.tsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "_src": "run_media_abhishek_bbc_projects_do_fetch_src_components_themetoggle_tsx",
+      "_tgt": "themetoggle_themetoggle",
+      "source": "run_media_abhishek_bbc_projects_do_fetch_src_components_themetoggle_tsx",
+      "target": "themetoggle_themetoggle",
       "confidence_score": 1.0
     },
     {
@@ -650,6 +722,18 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": "/run/media/abhishek/BBC/Projects/Do-Fetch/src/app/faculty/profile/page.tsx",
+      "source_location": "L8",
+      "weight": 1.0,
+      "_src": "run_media_abhishek_bbc_projects_do_fetch_src_app_faculty_profile_page_tsx",
+      "_tgt": "page_facultyprofilepage",
+      "source": "run_media_abhishek_bbc_projects_do_fetch_src_app_faculty_profile_page_tsx",
+      "target": "page_facultyprofilepage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": "/run/media/abhishek/BBC/Projects/Do-Fetch/src/app/student/upload/page.tsx",
       "source_location": "L23",
       "weight": 1.0,
@@ -705,6 +789,18 @@
       "_tgt": "page_handlefilechange",
       "source": "run_media_abhishek_bbc_projects_do_fetch_src_app_student_upload_page_tsx",
       "target": "page_handlefilechange",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/run/media/abhishek/BBC/Projects/Do-Fetch/src/app/student/profile/page.tsx",
+      "source_location": "L8",
+      "weight": 1.0,
+      "_src": "run_media_abhishek_bbc_projects_do_fetch_src_app_student_profile_page_tsx",
+      "_tgt": "page_studentprofilepage",
+      "source": "run_media_abhishek_bbc_projects_do_fetch_src_app_student_profile_page_tsx",
+      "target": "page_studentprofilepage",
       "confidence_score": 1.0
     },
     {

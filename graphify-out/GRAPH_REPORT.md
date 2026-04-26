@@ -1,12 +1,12 @@
 # Graph Report - /run/media/abhishek/BBC/Projects/Do-Fetch  (2026-04-27)
 
 ## Corpus Check
-- 31 files · ~107,973 words
+- 32 files · ~108,013 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 50 nodes · 22 edges · 28 communities detected
-- Extraction: 91% EXTRACTED · 9% INFERRED · 0% AMBIGUOUS · INFERRED: 2 edges (avg confidence: 0.8)
+- 54 nodes · 27 edges · 27 communities detected
+- Extraction: 85% EXTRACTED · 15% INFERRED · 0% AMBIGUOUS · INFERRED: 4 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Community Hubs (Navigation)
@@ -37,25 +37,30 @@
 - [[_COMMUNITY_Community 24|Community 24]]
 - [[_COMMUNITY_Community 25|Community 25]]
 - [[_COMMUNITY_Community 26|Community 26]]
-- [[_COMMUNITY_Community 27|Community 27]]
 
 ## God Nodes (most connected - your core abstractions)
-1. `useAuth()` - 3 edges
+1. `useAuth()` - 5 edges
 2. `FacultyLoginPage()` - 2 edges
 3. `StudentLoginPage()` - 2 edges
 4. `handleExport()` - 2 edges
+5. `FacultyProfilePage()` - 2 edges
+6. `StudentProfilePage()` - 2 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `useAuth()` --calls--> `FacultyLoginPage()`  [INFERRED]
   /run/media/abhishek/BBC/Projects/Do-Fetch/src/context/AuthContext.tsx → /run/media/abhishek/BBC/Projects/Do-Fetch/src/app/login/faculty/page.tsx
 - `useAuth()` --calls--> `StudentLoginPage()`  [INFERRED]
   /run/media/abhishek/BBC/Projects/Do-Fetch/src/context/AuthContext.tsx → /run/media/abhishek/BBC/Projects/Do-Fetch/src/app/login/student/page.tsx
+- `FacultyProfilePage()` --calls--> `useAuth()`  [INFERRED]
+  /run/media/abhishek/BBC/Projects/Do-Fetch/src/app/faculty/profile/page.tsx → /run/media/abhishek/BBC/Projects/Do-Fetch/src/context/AuthContext.tsx
+- `StudentProfilePage()` --calls--> `useAuth()`  [INFERRED]
+  /run/media/abhishek/BBC/Projects/Do-Fetch/src/app/student/profile/page.tsx → /run/media/abhishek/BBC/Projects/Do-Fetch/src/context/AuthContext.tsx
 
 ## Communities
 
 ### Community 0 - "Community 0"
-Cohesion: 0.33
-Nodes (3): useAuth(), FacultyLoginPage(), StudentLoginPage()
+Cohesion: 0.2
+Nodes (5): useAuth(), FacultyLoginPage(), FacultyProfilePage(), StudentLoginPage(), StudentProfilePage()
 
 ### Community 1 - "Community 1"
 Cohesion: 0.33
@@ -161,10 +166,6 @@ Nodes (0):
 Cohesion: 1.0
 Nodes (0): 
 
-### Community 27 - "Community 27"
-Cohesion: 1.0
-Nodes (0): 
-
 ## Knowledge Gaps
 - **Thin community `Community 3`** (2 nodes): `useCertificates.ts`, `useCertificates()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
@@ -174,35 +175,35 @@ Nodes (0):
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 6`** (2 nodes): `CertificateCard()`, `CertificateCard.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 7`** (2 nodes): `RatingBadge()`, `RatingBadge.tsx`
+- **Thin community `Community 7`** (2 nodes): `ThemeToggle.tsx`, `ThemeToggle()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 8`** (2 nodes): `StatCard.tsx`, `StatCard()`
+- **Thin community `Community 8`** (2 nodes): `RatingBadge()`, `RatingBadge.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 9`** (2 nodes): `RootLayout()`, `layout.tsx`
+- **Thin community `Community 9`** (2 nodes): `StatCard.tsx`, `StatCard()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 10`** (2 nodes): `AuditDetailPage()`, `page.tsx`
+- **Thin community `Community 10`** (2 nodes): `RootLayout()`, `layout.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 11`** (2 nodes): `utils.ts`, `cn()`
+- **Thin community `Community 11`** (2 nodes): `AuditDetailPage()`, `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 12`** (1 nodes): `next.config.ts`
+- **Thin community `Community 12`** (2 nodes): `utils.ts`, `cn()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 13`** (1 nodes): `postcss.config.mjs`
+- **Thin community `Community 13`** (1 nodes): `next.config.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 14`** (1 nodes): `eslint.config.mjs`
+- **Thin community `Community 14`** (1 nodes): `postcss.config.mjs`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 15`** (1 nodes): `next-env.d.ts`
+- **Thin community `Community 15`** (1 nodes): `eslint.config.mjs`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 16`** (1 nodes): `next-env.d.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 17`** (1 nodes): `api.ts`
+- **Thin community `Community 17`** (1 nodes): `next-env.d.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 18`** (1 nodes): `Navbar.tsx`
+- **Thin community `Community 18`** (1 nodes): `api.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 19`** (1 nodes): `Dock.tsx`
+- **Thin community `Community 19`** (1 nodes): `Navbar.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 20`** (1 nodes): `Sidebar.tsx`
+- **Thin community `Community 20`** (1 nodes): `Dock.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 21`** (1 nodes): `page.tsx`
+- **Thin community `Community 21`** (1 nodes): `Sidebar.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 22`** (1 nodes): `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
@@ -214,11 +215,9 @@ Nodes (0):
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 26`** (1 nodes): `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 27`** (1 nodes): `page.tsx`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Are the 2 inferred relationships involving `useAuth()` (e.g. with `FacultyLoginPage()` and `StudentLoginPage()`) actually correct?**
-  _`useAuth()` has 2 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 4 inferred relationships involving `useAuth()` (e.g. with `FacultyLoginPage()` and `StudentLoginPage()`) actually correct?**
+  _`useAuth()` has 4 INFERRED edges - model-reasoned connections that need verification._

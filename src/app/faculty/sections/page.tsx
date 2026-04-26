@@ -12,8 +12,12 @@ import {
   ExternalLink as ExternalLinkIcon,
   ShieldCheck,
   Layers,
-  ArrowRight
+  ArrowRight,
+  Download,
+  FileSpreadsheet
 } from "lucide-react";
+import Papa from "papaparse";
+import * as XLSX from "xlsx";
 import { RatingBadge, Rating } from "@/components/RatingBadge";
 import { useCertificates } from "@/hooks/useCertificates";
 import { cn } from "@/lib/utils";
@@ -41,6 +45,7 @@ export default function FacultySectionsPage() {
   const [activeSection, setActiveSection] = useState("All");
   const [search, setSearch] = useState("");
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
+  const [exportMenuOpen, setExportMenuOpen] = useState(false);
 
   const sections = ["All", "A", "B", "C", "D", "E", "F"];
 
@@ -50,6 +55,30 @@ export default function FacultySectionsPage() {
                           s.rollNo.toLowerCase().includes(search.toLowerCase());
     return matchesSection && matchesSearch;
   });
+
+  const handleExport = (format: "CSV" | "Excel") => {
+    const dataToExport = filteredStudents;
+    const fileName = `adamos_students_${activeSection === "All" ? "global" : `section_${activeSection}`}`;
+
+    if (format === "CSV") {
+      const csv = Papa.unparse(dataToExport);
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement("a");
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute("download", `${fileName}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } else {
+      const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Students");
+      XLSX.writeFile(workbook, `${fileName}.xlsx`);
+    }
+    setExportMenuOpen(false);
+  };
 
   // Get certificates for a specific student (mock logic: matching by name char for demo)
   const getStudentCerts = (rollNo: string) => {
@@ -95,15 +124,62 @@ export default function FacultySectionsPage() {
             ))}
           </div>
 
-          <div className="relative w-full md:w-80">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
-            <input 
-              type="text"
-              placeholder="Filter by name or ID..."
-              className="w-full bg-bg-surface/50 border border-white/5 pl-12 pr-6 py-4 rounded-2xl text-sm text-text-primary focus:outline-none focus:ring-1 focus:ring-accent transition-all hover:bg-white/5"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
+          <div className="flex items-center gap-4 w-full md:w-auto">
+            <div className="relative flex-1 md:w-80">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
+              <input 
+                type="text"
+                placeholder="Filter by name or ID..."
+                className="w-full bg-bg-surface/50 border border-white/5 pl-12 pr-6 py-4 rounded-2xl text-sm text-text-primary focus:outline-none focus:ring-1 focus:ring-accent transition-all hover:bg-white/5"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
+            
+            <div className="relative z-20">
+              <button 
+                onClick={() => setExportMenuOpen(!exportMenuOpen)}
+                className="h-14 px-6 bg-accent hover:bg-accent-hover text-white rounded-2xl font-bold text-xs uppercase tracking-widest flex items-center gap-2 transition-all shadow-xl shadow-accent/20 active:scale-95"
+              >
+                <Download className="w-4 h-4" />
+                Export Data
+              </button>
+              
+              <AnimatePresence>
+                {exportMenuOpen && (
+                  <>
+                    <div className="fixed inset-0 z-40" onClick={() => setExportMenuOpen(false)} />
+                    <motion.div 
+                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                      className="absolute right-0 top-[calc(100%+0.5rem)] w-48 bg-bg-surface border border-white/10 rounded-2xl shadow-2xl p-2 z-50 overflow-hidden"
+                    >
+                      <button 
+                        onClick={() => handleExport("CSV")}
+                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-xl text-left transition-colors"
+                      >
+                        <FileText className="w-4 h-4 text-accent" />
+                        <div>
+                          <p className="text-xs font-bold text-text-primary uppercase tracking-widest">CSV</p>
+                          <p className="text-[10px] text-text-muted">Plain text format</p>
+                        </div>
+                      </button>
+                      <button 
+                        onClick={() => handleExport("Excel")}
+                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-xl text-left transition-colors mt-1"
+                      >
+                        <FileSpreadsheet className="w-4 h-4 text-accent" />
+                        <div>
+                          <p className="text-xs font-bold text-text-primary uppercase tracking-widest">Excel</p>
+                          <p className="text-[10px] text-text-muted">Rich data format</p>
+                        </div>
+                      </button>
+                    </motion.div>
+                  </>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
         </div>
 

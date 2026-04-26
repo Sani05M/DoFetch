@@ -44,20 +44,28 @@ export default function StudentDashboard() {
 
       {/* Grid Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-20">
-        {stats.map((stat, i) => (
-          <div key={i} className={`bento-card flex flex-col justify-between h-48 border-3 hover:-translate-y-1 hover:shadow-[6px_6px_0_#09090b] shadow-[4px_4px_0_#09090b] ${stat.color}`}>
-            <div className="flex items-center justify-between">
-              <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-bg-dark shadow-sm border-2 border-zinc-200">
-                {React.cloneElement(stat.icon as React.ReactElement<{ className?: string }>, { className: "w-6 h-6" })}
+        {stats.map((stat, i) => {
+          const href = stat.label === "Total Artifacts" 
+            ? "/student/certificates" 
+            : stat.label === "Verified Syncs" 
+              ? "/student/certificates?filter=verified" 
+              : "/student/certificates?filter=pending";
+              
+          return (
+            <Link href={href} key={i} className={`bento-card flex flex-col justify-between h-48 border-3 hover:-translate-y-1 hover:shadow-[6px_6px_0_#09090b] shadow-[4px_4px_0_#09090b] transition-all cursor-pointer ${stat.color}`}>
+              <div className="flex items-center justify-between">
+                <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-bg-dark shadow-sm border-2 border-zinc-200">
+                  {React.cloneElement(stat.icon as React.ReactElement<{ className?: string }>, { className: "w-6 h-6" })}
+                </div>
+                <ArrowUpRight className="w-6 h-6 opacity-30 group-hover:opacity-100 transition-opacity" />
               </div>
-              <ArrowUpRight className="w-6 h-6 opacity-30" />
-            </div>
-            <div>
-              <span className="text-6xl font-black tracking-tighter">{stat.count}</span>
-              <p className="text-sm font-bold uppercase tracking-tight mt-1 opacity-80">{stat.label}</p>
-            </div>
-          </div>
-        ))}
+              <div>
+                <span className="text-6xl font-black tracking-tighter">{stat.count}</span>
+                <p className="text-sm font-bold uppercase tracking-tight mt-1 opacity-80">{stat.label}</p>
+              </div>
+            </Link>
+          );
+        })}
       </div>
 
       {/* Recent Activity */}

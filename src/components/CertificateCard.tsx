@@ -56,11 +56,32 @@ export function CertificateCard({ certificate, className }: CertificateCardProps
       </div>
 
       <div className="flex items-center gap-4 pt-6 border-t border-zinc-200 group-hover:border-zinc-300 transition-colors">
-        <button className="flex-1 bg-bg-dark text-white py-3 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-zinc-800 hover:shadow-lg hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2">
+        <button 
+          onClick={(e) => {
+            e.stopPropagation();
+            const content = `Certificate: ${certificate.title}\nIssuer: ${certificate.issuer}\nDate: ${certificate.issueDate}\nStatus: ${certificate.status}`;
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${certificate.title.replace(/\s+/g, '_')}_Certificate.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+          }}
+          className="flex-1 bg-bg-dark text-white py-3 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-zinc-800 hover:shadow-lg hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2"
+        >
           <Download className="w-4 h-4" />
           Download
         </button>
-        <button className="p-3 border-2 border-zinc-200 rounded-xl hover:bg-zinc-50 hover:shadow-md hover:-translate-y-0.5 transition-all text-bg-dark bg-white group-hover:border-zinc-300">
+        <button 
+          onClick={(e) => {
+            e.stopPropagation();
+            window.open(`/student/certificates/${certificate.id}`, '_blank');
+          }}
+          className="p-3 border-2 border-zinc-200 rounded-xl hover:bg-zinc-50 hover:shadow-md hover:-translate-y-0.5 transition-all text-bg-dark bg-white group-hover:border-zinc-300"
+        >
           <ExternalLink className="w-5 h-5" />
         </button>
       </div>

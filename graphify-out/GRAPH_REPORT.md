@@ -1,7 +1,7 @@
 # Graph Report - /run/media/abhishek/BBC/Projects/Do-Fetch  (2026-04-27)
 
 ## Corpus Check
-- 31 files · ~107,504 words
+- 31 files · ~107,638 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary

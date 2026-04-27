@@ -72,132 +72,34 @@ export default async function VerifyPage({ params }: Props) {
   const isApproved = cert.status === 'approved' || cert.status === 'verified';
 
   return (
-    <div className="min-h-screen bg-bg-base py-12 px-6 flex flex-col items-center">
+    <div className="min-h-[100dvh] bg-[#09090b] p-4 md:p-8 flex flex-col items-center justify-center overflow-hidden selection:bg-accent selection:text-bg-dark">
       {/* Dynamic Background */}
-      <div className="fixed inset-0 pointer-events-none opacity-[0.03] overflow-hidden select-none z-0">
-        {Array.from({ length: 40 }).map((_, i) => (
-          <div key={i} className="whitespace-nowrap font-mono text-[8px] leading-none">
-            {Array.from({ length: 150 }).map(() => Math.random() > 0.5 ? "1" : "0").join("")}
-          </div>
-        ))}
+      <div className="fixed inset-0 pointer-events-none z-0 flex items-center justify-center overflow-hidden">
+        <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-accent/20 rounded-full blur-[120px] mix-blend-screen opacity-50" />
+        <div className="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] bg-blue-500/10 rounded-full blur-[150px] mix-blend-screen opacity-50" />
       </div>
 
-      <div className="w-full max-w-4xl relative z-10">
+      <div className="w-full max-w-5xl relative z-10 flex flex-col h-full justify-center">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8">
+        <div className="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-2">
           <div>
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-black text-accent rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-6">
-              <Zap className="w-4 h-4 fill-current" />
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-zinc-900/50 backdrop-blur-md border border-zinc-800 text-accent rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-2">
+              <Zap className="w-3 h-3 fill-current" />
               Official Registry Artifact
             </div>
-            <h1 className="text-5xl md:text-8xl font-black uppercase tracking-tighter leading-[0.8] mb-4">
-              {isApproved ? 'VERIFIED' : 'PENDING'}<br/>
-              <span className={isApproved ? 'text-accent' : 'text-zinc-400'}>CREDENTIAL</span>
+            <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tighter leading-[0.85] text-white">
+              {isApproved ? 'VERIFIED' : 'PENDING'} <span className={isApproved ? 'text-transparent bg-clip-text bg-gradient-to-r from-accent to-emerald-400' : 'text-zinc-600'}>CREDENTIAL</span>
             </h1>
           </div>
-          <div className="flex items-center gap-4">
-            <div className="text-right hidden md:block">
-              <span className="block text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-1">ARTIFACT ID</span>
-              <span className="block font-mono text-xs font-bold text-zinc-600">#{id}</span>
-            </div>
-          </div>
         </div>
 
-        {/* Main Content Card */}
-        <div className="bg-white border-4 border-black p-8 md:p-16 rounded-[3rem] shadow-[24px_24px_0_#000] relative overflow-hidden">
-          {/* Status Badge */}
-          <div className="absolute top-8 right-8">
-            <div className={`px-6 py-3 rounded-2xl border-4 border-black text-sm font-black uppercase tracking-widest shadow-[8px_8px_0_#000] ${isApproved ? 'bg-accent text-bg-dark' : 'bg-zinc-100 text-zinc-400'}`}>
-              {isApproved ? 'AUTHENTICATED' : 'IN REVIEW'}
-            </div>
-          </div>
-
-          <div className="space-y-12">
-            <div className="space-y-4">
-              <span className="block text-[12px] font-black uppercase tracking-[0.4em] text-zinc-400">CREDENTIAL TITLE</span>
-              <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tight leading-none text-black">
-                {cert.title}
-              </h2>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 pt-12 border-t-4 border-zinc-50">
-              <div className="space-y-8">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-zinc-50 border-2 border-zinc-100 rounded-2xl flex items-center justify-center shrink-0">
-                    <User className="w-6 h-6 text-zinc-400" />
-                  </div>
-                  <div>
-                    <span className="block text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-1">CREDENTIAL HOLDER</span>
-                    <span className="text-xl font-black uppercase text-black">
-                      {(cert.profiles as any)?.full_name || 'Verified Scholar'}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-zinc-50 border-2 border-zinc-100 rounded-2xl flex items-center justify-center shrink-0">
-                    <Building2 className="w-6 h-6 text-zinc-400" />
-                  </div>
-                  <div>
-                    <span className="block text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-1">ISSUER</span>
-                    <span className="text-xl font-black uppercase text-black">{cert.issuer || 'Institutional Authority'}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-8">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-zinc-50 border-2 border-zinc-100 rounded-2xl flex items-center justify-center shrink-0">
-                    <Calendar className="w-6 h-6 text-zinc-400" />
-                  </div>
-                  <div>
-                    <span className="block text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-1">ISSUE DATE</span>
-                    <span className="text-xl font-black uppercase text-black">{cert.issue_date || cert.created_at.split('T')[0]}</span>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-zinc-50 border-2 border-zinc-100 rounded-2xl flex items-center justify-center shrink-0">
-                    <ShieldCheck className="w-6 h-6 text-zinc-400" />
-                  </div>
-                  <div>
-                    <span className="block text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-1">VERIFICATION STATUS</span>
-                    <div className="flex items-center gap-2">
-                       <span className={`text-xl font-black uppercase ${isApproved ? 'text-green-500' : 'text-zinc-400'}`}>
-                        {isApproved ? 'VALIDATED' : 'NOT VERIFIED'}
-                      </span>
-                      {isApproved && <CheckCircle2 className="w-6 h-6 text-green-500" />}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {isApproved && cert.extracted_text?.ai_reasoning && (
-              <div className="p-8 bg-accent/5 border-4 border-accent/20 rounded-[2rem] relative">
-                <div className="absolute -top-4 -left-4 bg-accent text-bg-dark px-4 py-1 text-[10px] font-black uppercase tracking-widest border-2 border-black">
-                  Registry Audit Log
-                </div>
-                <p className="text-zinc-600 font-medium italic leading-relaxed">
-                  "{cert.extracted_text.ai_reasoning}"
-                </p>
-              </div>
-            )}
-
-            {/* SOPHISTICATED LIVE PREVIEW */}
-            <div className="pt-12 border-t-4 border-zinc-50">
-              <PublicCertificateViewer certificate={cert} />
-            </div>
-          </div>
-        </div>
+        {/* Main Content Component */}
+        <PublicCertificateViewer certificate={cert} />
 
         {/* Footer */}
-        <div className="mt-16 flex flex-col md:flex-row items-center justify-between gap-8 text-center md:text-left">
-          <div>
-            <p className="text-sm font-black uppercase tracking-widest text-zinc-400">Security Guarantee</p>
-            <p className="text-xs text-zinc-500 max-w-sm">This artifact is cryptographically linked to the Adamas University Mesh and cannot be altered or forged.</p>
-          </div>
-          <Link href="/" className="btn-secondary px-8 py-4 text-xs">Access Official Portal</Link>
+        <div className="mt-4 mb-2 flex flex-col items-center text-center gap-1">
+          <p className="text-xs font-black uppercase tracking-widest text-zinc-500">Security Guarantee</p>
+          <p className="text-[10px] text-zinc-600 max-w-sm">This artifact is cryptographically linked to the Adamas University Mesh and cannot be altered or forged.</p>
         </div>
       </div>
     </div>

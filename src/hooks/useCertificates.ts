@@ -51,6 +51,7 @@ export function useCertificates() {
         type: c.type,
         issueDate: c.issue_date,
         rating: c.score ? (c.score > 90 ? "Platinum" : c.score > 75 ? "Gold" : "Silver") : "Pending",
+        score: c.score || 0,
         status: c.status,
         fileType: "PDF",
         fileId: c.telegram_file_id,
@@ -70,18 +71,36 @@ export function useCertificates() {
 
     // Institutional Real-time Sync: Auto-refresh on any database change
     const channel = supabase
-      .channel('certificates_realtime')
+      .channel(`certs_realtime_${user?.id || 'anon'}`)
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'certificates' },
-        () => {
-          console.log("Real-time update detected, re-fetching artifacts...");
-          fetchCertificates();
+        async (payload) => {
+          console.log("Registry Sync Event:", payload.eventType, payload);
+          
+          if (payload.eventType === 'INSERT') {
+            // Re-fetch to get profile joins (Supebase Realtime doesn't support joins in payload)
+            await fetchCertificates();
+          } else if (payload.eventType === 'UPDATE') {
+            setCertificates(current => 
+              current.map(c => c.id === payload.new.id ? { 
+                ...c, 
+                status: payload.new.status, 
+                score: payload.new.score,
+                rating: payload.new.score ? (payload.new.score > 90 ? "Platinum" : payload.new.score > 75 ? "Gold" : "Silver") : "Pending",
+              } : c)
+            );
+          } else if (payload.eventType === 'DELETE') {
+            setCertificates(current => current.filter(c => c.id === payload.old.id));
+          }
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log("Realtime Subscription Status:", status);
+      });
 
     return () => {
+      console.log("Cleaning up realtime registry sync...");
       supabase.removeChannel(channel);
     };
   }, [user?.id]);
@@ -92,11 +111,11 @@ export function useCertificates() {
     await fetchCertificates();
   };
 
-  const updateStatus = async (id: string, status: string, rating?: any) => {
+  const updateStatus = async (id: string, status: string) => {
     try {
       const { error } = await supabase
         .from("certificates")
-        .update({ status, score: rating })
+        .update({ status })
         .eq("id", id);
       
       if (error) throw error;

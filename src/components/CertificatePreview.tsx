@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { 
   X, 
@@ -15,7 +16,8 @@ import {
   FileText,
   ShieldAlert,
   ExternalLink,
-  RefreshCw
+  RefreshCw,
+  Share2
 } from "lucide-react";
 import { Certificate } from "./CertificateCard";
 
@@ -65,10 +67,12 @@ export function CertificatePreview({ certificate, isOpen, onClose, onDelete }: C
   const [isVerifying, setIsVerifying] = useState(false);
   const [hasVerified, setHasVerified] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showConfirmPrune, setShowConfirmPrune] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isLoadingPreview, setIsLoadingPreview] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [isFlipped, setIsFlipped] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
 
   const [verificationReason, setVerificationReason] = useState<string | null>(null);
 
@@ -151,7 +155,7 @@ export function CertificatePreview({ certificate, isOpen, onClose, onDelete }: C
   };
 
   const handleDelete = async () => {
-    if (!certificate || !window.confirm("ARE YOU SURE? THIS WILL PERMANENTLY PURGE THE ARTIFACT FROM THE UNIVERSITY REGISTRY.")) return;
+    if (!certificate) return;
     
     setIsDeleting(true);
     try {
@@ -160,12 +164,13 @@ export function CertificatePreview({ certificate, isOpen, onClose, onDelete }: C
         onDelete?.();
         onClose();
       } else {
-        alert("Failed to purge artifact.");
+        console.error("Failed to purge artifact.");
       }
     } catch (err) {
       console.error(err);
     } finally {
       setIsDeleting(false);
+      setShowConfirmPrune(false);
     }
   };
 
@@ -187,9 +192,12 @@ export function CertificatePreview({ certificate, isOpen, onClose, onDelete }: C
     y.set(mouseY);
   };
 
-  if (!certificate) return null;
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
-  return (
+  if (!certificate || !mounted) return null;
+
+  return createPortal(
     <AnimatePresence>
       {isOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
@@ -219,14 +227,7 @@ export function CertificatePreview({ certificate, isOpen, onClose, onDelete }: C
                   <span className="block text-xs font-black uppercase tracking-widest text-white leading-none">#{certificate.id.slice(0,12)}</span>
                 </div>
               </div>
-              <div className="flex items-center gap-4">
-                 <button 
-                  onClick={() => setIsFlipped(!isFlipped)}
-                  className="px-6 py-2 bg-bg-surface border-2 border-bg-dark rounded-xl text-[10px] font-black uppercase tracking-widest shadow-[4px_4px_0_#000] hover:bg-accent transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none flex items-center gap-2"
-                >
-                  <RefreshCw className={`w-3 h-3 ${isFlipped ? 'rotate-180' : ''} transition-transform duration-500`} />
-                  {isFlipped ? 'Show Card' : 'Show Artifact'}
-                </button>
+              <div className="flex items-center gap-2 lg:gap-4">
                 <motion.button
                   whileHover={{ scale: 1.1, rotate: 90 }}
                   whileTap={{ scale: 0.9 }}
@@ -242,9 +243,10 @@ export function CertificatePreview({ certificate, isOpen, onClose, onDelete }: C
               
               {/* FLIPPABLE PANE */}
               <div 
-                className="w-full lg:flex-1 bg-zinc-950 flex items-center justify-center border-b-4 lg:border-b-0 lg:border-r-4 border-bg-dark relative overflow-hidden group perspective-2000 min-h-[400px] lg:min-h-0"
+                className="w-full min-h-[250px] lg:min-h-0 lg:flex-1 bg-zinc-950 flex items-center justify-center border-b-4 lg:border-b-0 lg:border-r-4 border-bg-dark relative overflow-hidden group perspective-2000 cursor-pointer flex-shrink-0"
                 onMouseMove={handleMouseMove}
                 onMouseLeave={() => { x.set(0); y.set(0); }}
+                onClick={() => setIsFlipped(!isFlipped)}
               >
                 <motion.div
                   className="w-full h-full relative"
@@ -311,8 +313,11 @@ export function CertificatePreview({ certificate, isOpen, onClose, onDelete }: C
                         </div>
                         <div className="text-right">
                            <div className="text-[10px] lg:text-sm font-black text-white tabular-nums tracking-tighter">{certificate.issueDate}</div>
-                           <div className="mt-1 lg:mt-2 inline-flex items-center px-1.5 lg:px-2 py-0.5 bg-accent text-bg-dark rounded-lg text-[6px] lg:text-[8px] font-black uppercase tracking-widest border border-bg-dark/20">
-                              AUTHENTIC
+                           <div className={`mt-1 lg:mt-2 inline-flex items-center px-1.5 lg:px-2 py-0.5 rounded-lg text-[6px] lg:text-[8px] font-black uppercase tracking-widest border border-bg-dark/20 ${
+                             (certificate.status === "verified" || certificate.status === "approved") ? "bg-[#10b981] text-white" :
+                             certificate.status === "pending" ? "bg-accent text-bg-dark" : "bg-red-500 text-white"
+                           }`}>
+                              {certificate.status === "pending" ? "PENDING" : certificate.status.toUpperCase()}
                            </div>
                         </div>
                       </div>
@@ -355,10 +360,10 @@ export function CertificatePreview({ certificate, isOpen, onClose, onDelete }: C
               </div>
 
               {/* RIGHT: METADATA & ACTIONS */}
-              <div className="w-full lg:flex-[0.8] bg-white p-6 lg:p-12 flex flex-col justify-between">
-                <div className="space-y-8 lg:space-y-12">
-                   <div className="flex items-center gap-4 p-4 bg-bg-base border-2 border-bg-dark rounded-2xl shadow-[4px_4px_0_#000]">
-                    <div className="w-10 h-10 lg:w-12 lg:h-12 bg-bg-dark rounded-xl flex items-center justify-center text-accent">
+              <div className="w-full lg:flex-[0.8] bg-white p-4 sm:p-6 lg:p-12 flex flex-col justify-between">
+                <div className="space-y-6 lg:space-y-12">
+                   <div className="flex items-center gap-4 p-3 sm:p-4 bg-bg-base border-2 border-bg-dark rounded-xl sm:rounded-2xl shadow-[4px_4px_0_#000]">
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-bg-dark rounded-xl flex items-center justify-center text-accent">
                       <Zap className="w-5 h-5 lg:w-6 lg:h-6 fill-current" />
                     </div>
                     <div>
@@ -367,9 +372,9 @@ export function CertificatePreview({ certificate, isOpen, onClose, onDelete }: C
                     </div>
                   </div>
 
-                  <div className="space-y-6 lg:space-y-10">
-                    <div className="flex items-start gap-4 lg:gap-5">
-                      <div className="w-10 h-10 lg:w-12 lg:h-12 bg-zinc-50 border-2 border-zinc-100 rounded-xl lg:rounded-2xl flex items-center justify-center flex-shrink-0 shadow-sm">
+                  <div className="space-y-4 sm:space-y-6 lg:space-y-10">
+                    <div className="flex items-start gap-3 sm:gap-4 lg:gap-5">
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-zinc-50 border-2 border-zinc-100 rounded-lg sm:rounded-xl lg:rounded-2xl flex items-center justify-center flex-shrink-0 shadow-sm">
                         <Building2 className="w-5 h-5 lg:w-6 lg:h-6 text-zinc-400" />
                       </div>
                       <div>
@@ -378,8 +383,8 @@ export function CertificatePreview({ certificate, isOpen, onClose, onDelete }: C
                       </div>
                     </div>
 
-                    <div className="flex items-start gap-4 lg:gap-5">
-                      <div className="w-10 h-10 lg:w-12 lg:h-12 bg-zinc-50 border-2 border-zinc-100 rounded-xl lg:rounded-2xl flex items-center justify-center flex-shrink-0 shadow-sm">
+                    <div className="flex items-start gap-3 sm:gap-4 lg:gap-5">
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-zinc-50 border-2 border-zinc-100 rounded-lg sm:rounded-xl lg:rounded-2xl flex items-center justify-center flex-shrink-0 shadow-sm">
                         <Calendar className="w-5 h-5 lg:w-6 lg:h-6 text-zinc-400" />
                       </div>
                       <div>
@@ -388,8 +393,8 @@ export function CertificatePreview({ certificate, isOpen, onClose, onDelete }: C
                       </div>
                     </div>
 
-                    <div className="flex items-start gap-4 lg:gap-5">
-                      <div className="w-10 h-10 lg:w-12 lg:h-12 bg-zinc-50 border-2 border-zinc-100 rounded-xl lg:rounded-2xl flex items-center justify-center flex-shrink-0 shadow-sm">
+                    <div className="flex items-start gap-3 sm:gap-4 lg:gap-5">
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-zinc-50 border-2 border-zinc-100 rounded-lg sm:rounded-xl lg:rounded-2xl flex items-center justify-center flex-shrink-0 shadow-sm">
                         <User className="w-5 h-5 lg:w-6 lg:h-6 text-zinc-400" />
                       </div>
                       <div>
@@ -416,38 +421,116 @@ export function CertificatePreview({ certificate, isOpen, onClose, onDelete }: C
                   </div>
                 </div>
 
-                <div className="space-y-4 pt-8 lg:pt-12">
-                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <a 
-                        href={previewUrl || "#"} 
-                        download={`${certificate.title.replace(/\s+/g, '_')}.pdf`}
-                        className="btn-primary py-4 lg:py-5 text-[10px] flex items-center justify-center gap-2 rounded-xl lg:rounded-2xl shadow-[4px_4px_0_#000] lg:shadow-[6px_6px_0_#000]"
-                      >
-                        <Download className="w-4 h-4 lg:w-5 lg:h-5" />
-                        DOWNLOAD PDF
-                      </a>
+                <div className="space-y-3 pt-6 lg:pt-8">
+                  <div className="grid grid-cols-2 gap-3 lg:gap-4 w-full">
+                    <button
+                      onClick={() => setIsFlipped(!isFlipped)}
+                      className="py-3 lg:py-4 bg-zinc-900 border-2 border-bg-dark rounded-xl lg:rounded-2xl shadow-[4px_4px_0_#000] hover:bg-zinc-800 hover:shadow-[2px_2px_0_#000] hover:translate-x-[2px] hover:translate-y-[2px] transition-all active:shadow-none active:translate-x-[4px] active:translate-y-[4px] flex items-center justify-center gap-2 group"
+                    >
+                      <RefreshCw className="w-4 h-4 lg:w-5 lg:h-5 text-accent group-hover:rotate-180 transition-transform duration-500" />
+                      <span className="text-[10px] font-black uppercase tracking-widest text-white">FLIP CARD</span>
+                    </button>
+                    <button
+                      onClick={async () => {
+                        const url = `${window.location.origin}/verify/${certificate.id}`;
+                        await navigator.clipboard.writeText(url);
+                        setIsCopied(true);
+                        setTimeout(() => setIsCopied(false), 2000);
+                      }}
+                      className={`py-3 lg:py-4 border-2 rounded-xl lg:rounded-2xl shadow-[4px_4px_0_#000] hover:shadow-[2px_2px_0_#000] hover:translate-x-[2px] hover:translate-y-[2px] transition-all active:shadow-none active:translate-x-[4px] active:translate-y-[4px] flex items-center justify-center gap-2 group ${
+                        isCopied ? "bg-accent text-bg-dark border-accent" : "bg-zinc-900 border-bg-dark hover:bg-zinc-800 text-white"
+                      }`}
+                    >
+                      {isCopied ? (
+                        <>
+                          <CheckCircle2 className="w-4 h-4 lg:w-5 lg:h-5" />
+                          <span className="text-[10px] font-black uppercase tracking-widest">COPIED</span>
+                        </>
+                      ) : (
+                        <>
+                          <Share2 className="w-4 h-4 lg:w-5 lg:h-5 text-accent group-hover:-translate-y-1 transition-transform duration-300" />
+                          <span className="text-[10px] font-black uppercase tracking-widest text-white">COPY PUBLIC LINK</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                  <div className="flex flex-col sm:flex-row gap-3 lg:gap-4 w-full">
+                    <a 
+                      href={previewUrl || "#"} 
+                      download={`${certificate.title.replace(/\\s+/g, '_')}.pdf`}
+                      className="btn-primary flex-1 py-3 lg:py-4 text-[10px] flex items-center justify-center gap-2 rounded-xl lg:rounded-2xl shadow-[4px_4px_0_#000] lg:shadow-[6px_6px_0_#000]"
+                    >
+                      <Download className="w-4 h-4 lg:w-5 lg:h-5" />
+                      <span className="hidden sm:inline">DOWNLOAD PDF ARTIFACT</span>
+                      <span className="sm:hidden">DOWNLOAD</span>
+                    </a>
+                    {onDelete && (
                       <button 
-                        className={`btn-secondary py-4 lg:py-5 text-[10px] flex items-center justify-center gap-2 rounded-xl lg:rounded-2xl border-4 shadow-[4px_4px_0_#000] lg:shadow-[6px_6px_0_#000] ${hasVerified ? 'bg-[#70e2a4] text-bg-dark border-bg-dark' : ''}`}
-                        onClick={() => !hasVerified && runRealVerification()}
+                        onClick={() => setShowConfirmPrune(true)}
+                        className="flex-1 py-3 lg:py-4 text-[10px] flex items-center justify-center gap-2 rounded-xl lg:rounded-2xl border-2 border-bg-dark bg-red-500 text-white font-black uppercase tracking-widest shadow-[4px_4px_0_#000] lg:shadow-[6px_6px_0_#000] hover:bg-red-600 transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
                       >
-                        {isVerifying ? <Loader2 className="w-4 h-4 lg:w-5 lg:h-5 animate-spin" /> : hasVerified ? <CheckCircle2 className="w-4 h-4 lg:w-5 lg:h-5" /> : <ShieldCheck className="w-4 h-4 lg:w-5 lg:h-5" />}
-                        {hasVerified ? 'AUTHENTIC' : 'VERIFY AUTHENTICITY'}
+                        <ShieldAlert className="w-4 h-4 lg:w-5 lg:h-5" />
+                        <span className="hidden sm:inline">PRUNE ARTIFACT</span>
+                        <span className="sm:hidden">PRUNE</span>
                       </button>
-                   </div>
-                   
-                   <button 
-                    onClick={handleDelete}
-                    disabled={isDeleting}
-                    className="w-full py-4 text-[10px] font-black uppercase tracking-widest text-red-500 hover:text-red-600 transition-colors"
-                   >
-                     {isDeleting ? 'PURGING...' : 'PURGE FROM REGISTRY'}
-                   </button>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
+
+            {/* Custom Prune Alert Overlay */}
+            <AnimatePresence>
+              {showConfirmPrune && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="absolute inset-0 z-50 bg-bg-dark/80 backdrop-blur-md flex items-center justify-center p-4 lg:p-8"
+                >
+                  <motion.div
+                    initial={{ scale: 0.95, y: 20 }}
+                    animate={{ scale: 1, y: 0 }}
+                    exit={{ scale: 0.95, y: 20 }}
+                    className="w-full max-w-sm bg-black/40 backdrop-blur-2xl border border-white/10 rounded-[2rem] p-6 lg:p-8 shadow-[0_8px_32px_rgba(0,0,0,0.4)] text-center relative overflow-hidden"
+                  >
+                    {/* Glass glare effect */}
+                    <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent pointer-events-none" />
+                    
+                    <div className="relative z-10">
+                      <div className="w-16 h-16 bg-red-500/20 border border-red-500/30 rounded-full flex items-center justify-center mx-auto mb-6 shadow-[0_0_20px_rgba(239,68,68,0.2)]">
+                        <ShieldAlert className="w-8 h-8 text-red-400" />
+                      </div>
+                      <h3 className="text-xl font-black uppercase tracking-tighter mb-2 text-white drop-shadow-md">Irreversible Action</h3>
+                      <p className="text-xs text-white/70 font-medium leading-relaxed mb-8 drop-shadow-sm">
+                        Are you sure? This will permanently purge the artifact from the university registry. This action cannot be undone.
+                      </p>
+                      <div className="flex flex-col sm:flex-row gap-3">
+                        <button
+                          onClick={() => setShowConfirmPrune(false)}
+                          disabled={isDeleting}
+                          className="flex-1 py-3.5 bg-white/5 border border-white/10 text-white/70 text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-white/10 hover:text-white transition-all backdrop-blur-md"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          onClick={handleDelete}
+                          disabled={isDeleting}
+                          className="flex-1 py-3.5 bg-red-500/80 border border-red-500/50 text-white text-[10px] font-black uppercase tracking-widest rounded-xl shadow-[0_0_20px_rgba(239,68,68,0.3)] hover:bg-red-500 hover:shadow-[0_0_30px_rgba(239,68,68,0.5)] transition-all flex items-center justify-center gap-2 backdrop-blur-md"
+                        >
+                          {isDeleting ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+                          YES, DELETE
+                        </button>
+                      </div>
+                    </div>
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.div>
         </div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }

@@ -8,14 +8,28 @@ import { useCertificates } from "@/hooks/useCertificates";
 import { CertificateCard, Certificate } from "@/components/CertificateCard";
 import { CertificatePreview } from "@/components/CertificatePreview";
 import { AnimatedSection, containerVariants, itemVariants } from "@/components/AnimatedSection";
-import { LayoutGrid, CheckCircle2, Clock, Plus, Zap, ArrowUpRight } from "lucide-react";
+import { LayoutGrid, CheckCircle2, Clock, Plus, Zap, ArrowUpRight, RefreshCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+
 
 import { useAuth } from "@/context/AuthContext";
 
 export default function StudentDashboard() {
   const { certificates, refresh } = useCertificates();
   const { user } = useAuth();
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    await refresh();
+    setTimeout(() => setIsRefreshing(false), 1000);
+  };
+
+  React.useEffect(() => {
+    const interval = setInterval(handleRefresh, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   const verifiedCount = certificates.filter(c => c.status === "verified" || c.status === "approved").length;
   const pendingCount = certificates.filter(c => c.status === "pending").length;
@@ -50,16 +64,30 @@ export default function StudentDashboard() {
               <span className="text-accent">{user?.name || "STUDENT"}</span>
             </h1>
           </div>
-          <motion.div 
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ x: 3, y: 3 }}
-            className="w-full md:w-auto"
-          >
-            <Link href="/student/upload" className="w-full btn-primary px-8 py-3 md:py-4 rounded-xl md:rounded-2xl transition-all active:shadow-none shadow-[4px_4px_0_#000]">
-              <Plus className="w-5 h-5 stroke-[3px]" />
-              Sync Credential
-            </Link>
-          </motion.div>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleRefresh}
+              title="Live Sync (every 5s)"
+              className="w-11 h-11 bg-bg-surface border-3 border-bg-dark rounded-2xl flex items-center justify-center text-text-primary hover:bg-accent hover:shadow-[4px_4px_0_#000] transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+            >
+              <motion.div
+                animate={isRefreshing ? { rotate: 360 } : { rotate: 0 }}
+                transition={isRefreshing ? { duration: 1, repeat: Infinity, ease: "linear" } : { duration: 0.4 }}
+              >
+                <RefreshCcw className="w-5 h-5" />
+              </motion.div>
+            </button>
+            <motion.div 
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ x: 3, y: 3 }}
+              className="w-full md:w-auto"
+            >
+              <Link href="/student/upload" className="w-full btn-primary px-8 py-3 md:py-4 rounded-xl md:rounded-2xl transition-all active:shadow-none shadow-[4px_4px_0_#000]">
+                <Plus className="w-5 h-5 stroke-[3px]" />
+                Sync Credential
+              </Link>
+            </motion.div>
+          </div>
         </div>
       </AnimatedSection>
 

@@ -102,8 +102,8 @@ export default function FacultyCertificatesPage() {
                     </td>
                     <td className="px-6 md:px-8 py-5 md:py-6">
                       <div className={`inline-flex items-center px-3 py-1.5 rounded-lg border-2 text-[10px] md:text-xs font-black uppercase tracking-widest ${
-                        isVerified ? "bg-green-500 text-bg-dark border-bg-dark group-hover:bg-[#09090b] group-hover:text-green-400 group-hover:border-[#09090b]" :
-                        isPending ? "bg-yellow-500 text-bg-dark border-bg-dark group-hover:bg-[#09090b] group-hover:text-yellow-400 group-hover:border-[#09090b]" :
+                        (cert.status === "verified" || cert.status === "approved") ? "bg-green-500 text-bg-dark border-bg-dark group-hover:bg-[#09090b] group-hover:text-green-400 group-hover:border-[#09090b]" :
+                        cert.status === "pending" ? "bg-yellow-500 text-bg-dark border-bg-dark group-hover:bg-[#09090b] group-hover:text-yellow-400 group-hover:border-[#09090b]" :
                         "bg-red-500 text-bg-dark border-bg-dark group-hover:bg-[#09090b] group-hover:text-red-400 group-hover:border-[#09090b]"
                       }`}>
                         {cert.status}

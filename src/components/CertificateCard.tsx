@@ -16,6 +16,7 @@ export interface Certificate {
   type: string;
   issueDate: string;
   rating: string;
+  score: number;
   status: "verified" | "pending" | "rejected" | "approved";
   fileType: "PDF" | "IMG";
   extractedText?: {
@@ -70,7 +71,7 @@ export function CertificateCard({ certificate, className, onClick }: Certificate
       whileTap={{ x: 2, y: 2 }}
       onClick={onClick}
       className={cn(
-        "group h-full flex flex-col justify-between p-6 rounded-[2.5rem] border-4 border-black shadow-[12px_12px_0_#000] transition-all cursor-pointer bg-white",
+        "group h-full flex flex-col justify-between p-6 rounded-[2.5rem] border-4 border-black shadow-[12px_12px_0_#000] transition-all cursor-pointer bg-white hover:bg-accent",
         className
       )}
     >
@@ -83,9 +84,14 @@ export function CertificateCard({ certificate, className, onClick }: Certificate
             "px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-2",
             isVerified 
               ? "bg-green-50 text-green-600 border-green-600/20" 
-              : "bg-black text-white border-black"
+              : certificate.status === "rejected"
+                ? "bg-red-50 text-red-600 border-red-600/20"
+                : "bg-black text-white border-black"
           )}>
-            {isVerified ? "VERIFIED" : "PENDING"}
+            {isVerified ? "VERIFIED" : certificate.status === "rejected" ? "REJECTED" : "PENDING"}
+            {certificate.score > 0 && (
+              <span className="ml-2 opacity-50 font-mono">[{certificate.score}]</span>
+            )}
           </div>
         </div>
 
@@ -94,7 +100,7 @@ export function CertificateCard({ certificate, className, onClick }: Certificate
         </h3>
         
         <div className="space-y-1">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-600">ISSUED BY {certificate.issuer || 'UNKNOWN (MANUAL VERIFICATION REQUIRED)'}</p>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-600">ISSUED BY {certificate.issuer || 'Self-Certified'}</p>
           <p className="text-[10px] font-black uppercase text-zinc-500">{certificate.issueDate}</p>
         </div>
       </div>

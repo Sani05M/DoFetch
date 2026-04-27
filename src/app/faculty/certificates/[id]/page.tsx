@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState, useEffect, use } from "react";
+import React, { useState, useEffect, use, useCallback } from "react";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import { motion } from "framer-motion";
 import { 
   ArrowLeft,
   CheckCircle2,
@@ -14,7 +15,8 @@ import {
   User,
   Calendar,
   Loader2,
-  Zap
+  Zap,
+  RefreshCcw
 } from "lucide-react";
 
 export default function AuditDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -24,6 +26,7 @@ export default function AuditDetailPage({ params }: { params: Promise<{ id: stri
   const [loading, setLoading] = useState(true);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isLoadingPreview, setIsLoadingPreview] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const unwrappedParams = use(params);
   const certId = unwrappedParams.id;
 
@@ -54,26 +57,36 @@ export default function AuditDetailPage({ params }: { params: Promise<{ id: stri
 
   const [overrideScore, setOverrideScore] = useState<number>(0);
 
-  useEffect(() => {
-    async function fetchCert() {
-      try {
-        const { data, error } = await supabase
-          .from("certificates")
-          .select("*, profiles(*)")
-          .eq("id", certId)
-          .single();
+  const fetchCert = useCallback(async () => {
+    try {
+      const { data, error } = await supabase
+        .from("certificates")
+        .select("*, profiles(*)")
+        .eq("id", certId)
+        .single();
 
-        if (error) throw error;
-        setCertificate(data);
-        setOverrideScore(data.score || 0);
-      } catch (err) {
-        console.error("Error fetching certificate:", err);
-      } finally {
-        setLoading(false);
-      }
+      if (error) throw error;
+      setCertificate(data);
+      setOverrideScore(data.score || 0);
+    } catch (err) {
+      console.error("Error fetching certificate:", err);
+    } finally {
+      setLoading(false);
     }
-    fetchCert();
   }, [certId]);
+
+  useEffect(() => {
+    fetchCert();
+    // Auto-refresh every 5 seconds
+    const interval = setInterval(fetchCert, 5000);
+    return () => clearInterval(interval);
+  }, [fetchCert]);
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    await fetchCert();
+    setTimeout(() => setIsRefreshing(false), 800);
+  };
 
   const handleAudit = async (status: "approved" | "rejected") => {
     setIsProcessing(true);
@@ -117,182 +130,182 @@ export default function AuditDetailPage({ params }: { params: Promise<{ id: stri
 
   return (
     <DashboardLayout allowedRole="faculty">
-      <div className="w-full max-w-[1600px] mx-auto px-4 md:px-8">
-        <Link href="/faculty/certificates" className="inline-flex items-center gap-2 text-sm font-black uppercase tracking-widest text-zinc-500 hover:text-bg-dark mb-8 border-b-2 border-transparent hover:border-bg-dark pb-1 transition-all">
-          <ArrowLeft className="w-4 h-4" />
-          Back to Queue
-        </Link>
-
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 md:mb-12 gap-4 md:gap-8">
-          <div>
-            <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-bold border-2 mb-4 ${
-              certificate.status === 'pending' ? 'bg-yellow-100 border-yellow-500 text-yellow-700' :
-              certificate.status === 'approved' ? 'bg-green-100 border-green-500 text-green-700' :
-              'bg-red-100 border-red-500 text-red-700'
-            }`}>
-              <ShieldAlert className="w-3 h-3" />
-              <span className="uppercase">{certificate.status} AUDIT</span>
-            </div>
-            <h1 className="text-3xl md:text-6xl font-black uppercase tracking-tighter leading-[0.85] break-words">
-              ARTIFACT<br/>
-              <span className="text-accent">#{certificate.id.substring(0, 8)}...</span>
-            </h1>
+      <div className="w-full max-w-[1400px] mx-auto">
+        {/* Top Bar */}
+        <div className="flex items-center justify-between mb-4">
+          <Link href="/faculty/certificates" className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-zinc-500 hover:text-bg-dark border-b-2 border-transparent hover:border-bg-dark pb-0.5 transition-all">
+            <ArrowLeft className="w-3.5 h-3.5" />
+            Back to Queue
+          </Link>
+          <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-bold border-2 ${
+            certificate.status === 'pending' ? 'bg-yellow-100 border-yellow-500 text-yellow-700' :
+            certificate.status === 'approved' ? 'bg-green-100 border-green-500 text-green-700' :
+            'bg-red-100 border-red-500 text-red-700'
+          }`}>
+            <ShieldAlert className="w-3 h-3" />
+            <span className="uppercase">{certificate.status}</span>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
-          {/* Document Preview Panel - REFINED BENTO DESIGN */}
-          <div className="lg:col-span-8 bg-zinc-900 flex flex-col items-center justify-center min-h-[500px] md:min-h-[800px] border-4 border-bg-dark overflow-hidden relative rounded-[2rem] md:rounded-[2.5rem] shadow-[8px_8px_0_#000] md:shadow-[12px_12px_0_#000]">
+        <h1 className="text-xl md:text-3xl font-black uppercase tracking-tighter leading-none mb-5">
+          ARTIFACT <span className="text-accent">#{certificate.id.substring(0, 8)}...</span>
+        </h1>
+
+        {/* BENTO GRID: Preview left (big), 2 stacked cards right (compact) */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 auto-rows-min">
+          
+          {/* Document Preview — spans both rows on desktop */}
+          <div className="lg:col-span-7 lg:row-span-2 bg-zinc-900 flex flex-col border-4 border-bg-dark overflow-hidden rounded-2xl shadow-[6px_6px_0_#000]">
             {isLoadingPreview ? (
-              <div className="flex flex-col items-center gap-6">
+              <div className="flex flex-col items-center justify-center gap-4 py-20">
                 <div className="relative">
-                  <div className="w-20 h-20 border-4 border-accent/20 rounded-full" />
-                  <div className="absolute top-0 left-0 w-20 h-20 border-4 border-t-accent rounded-full animate-spin" />
+                  <div className="w-14 h-14 border-4 border-accent/20 rounded-full" />
+                  <div className="absolute top-0 left-0 w-14 h-14 border-4 border-t-accent rounded-full animate-spin" />
                 </div>
-                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-accent animate-pulse">Establishing Secure Stream...</p>
+                <p className="text-[9px] font-black uppercase tracking-[0.3em] text-accent animate-pulse">Establishing Secure Stream...</p>
               </div>
             ) : previewUrl ? (
-              <div className="w-full h-full relative z-20 flex flex-col">
-                <div className="px-6 py-4 bg-bg-dark flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-6 h-6 bg-accent rounded-lg flex items-center justify-center text-bg-dark">
-                      <FileText className="w-3.5 h-3.5" />
+              <>
+                {/* Toolbar */}
+                <div className="px-4 py-2.5 bg-bg-dark flex items-center justify-between shrink-0">
+                  <div className="flex items-center gap-2">
+                    <div className="w-5 h-5 bg-accent rounded-md flex items-center justify-center text-bg-dark">
+                      <FileText className="w-3 h-3" />
                     </div>
-                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white">SECURE AUDIT ARTIFACT</span>
+                    <span className="text-[9px] font-black uppercase tracking-[0.15em] text-white">Secure Artifact</span>
                   </div>
                   <a 
                     href={previewUrl} 
                     target="_blank" 
-                    className="px-3 py-1 bg-zinc-800 text-[10px] font-black uppercase tracking-widest text-accent rounded-lg border-2 border-zinc-700 hover:bg-accent hover:text-bg-dark transition-all"
+                    className="px-2.5 py-1 bg-zinc-800 text-[9px] font-black uppercase tracking-widest text-accent rounded-md border border-zinc-700 hover:bg-accent hover:text-bg-dark transition-all"
                   >
-                    Open Full Artifact
+                    Open Full
                   </a>
                 </div>
-                <div className="flex-1 w-full bg-zinc-800 flex items-center justify-center overflow-hidden p-6">
-                  <div className="w-full h-full rounded-2xl overflow-hidden border-4 border-bg-dark shadow-2xl bg-white">
-                    {certificate.telegram_file_id.toLowerCase().includes('img') || certificate.telegram_file_id.toLowerCase().includes('jpg') || certificate.telegram_file_id.toLowerCase().includes('png') ? (
-                      <img 
-                        src={previewUrl}
-                        alt="Audit Preview"
-                        className="w-full h-full object-contain"
-                      />
-                    ) : (
-                      <iframe 
-                        src={`${previewUrl}#toolbar=0&navpanes=0`}
-                        className="w-full h-full border-none"
-                        title="Audit PDF Preview"
-                      />
-                    )}
-                  </div>
+                {/* Preview Area — fits content naturally */}
+                <div className="flex-1 bg-zinc-800 flex items-center justify-center overflow-auto p-4">
+                  {certificate.telegram_file_id.toLowerCase().includes('img') || certificate.telegram_file_id.toLowerCase().includes('jpg') || certificate.telegram_file_id.toLowerCase().includes('png') ? (
+                    <img 
+                      src={previewUrl}
+                      alt="Audit Preview"
+                      className="max-w-full max-h-[65vh] object-contain rounded-xl border-2 border-zinc-700 shadow-lg"
+                    />
+                  ) : (
+                    <iframe 
+                      src={`${previewUrl}#toolbar=0&navpanes=0`}
+                      className="w-full h-[65vh] border-none rounded-xl"
+                      title="Audit PDF Preview"
+                    />
+                  )}
                 </div>
-              </div>
+              </>
             ) : (
-              <div className="flex flex-col items-center p-12 text-center">
-                <div className="w-24 h-24 rounded-[2rem] bg-zinc-800 border-4 border-zinc-700 flex items-center justify-center text-zinc-600 mb-8 shadow-xl">
-                  <ShieldAlert className="w-12 h-12" />
+              <div className="flex flex-col items-center justify-center py-20 text-center">
+                <div className="w-16 h-16 rounded-2xl bg-zinc-800 border-2 border-zinc-700 flex items-center justify-center text-zinc-600 mb-4">
+                  <ShieldAlert className="w-8 h-8" />
                 </div>
-                <h2 className="text-3xl font-black uppercase tracking-tighter text-zinc-600 leading-none">ARTIFACT NOT<br/>FOUND</h2>
-                <p className="mt-4 text-[10px] font-black uppercase tracking-[0.3em] text-zinc-600 opacity-50">REGISTRY RECORD MISSING MEDIA LINK</p>
+                <h2 className="text-xl font-black uppercase tracking-tighter text-zinc-600 leading-none">Artifact Not Found</h2>
+                <p className="mt-2 text-[9px] font-black uppercase tracking-[0.2em] text-zinc-600/50">Missing media link</p>
               </div>
             )}
           </div>
 
-          {/* Metadata & Actions Panel - REFINED BENTO DESIGN */}
-          <div className="lg:col-span-4 flex flex-col gap-8">
-            <div className="bg-white border-4 border-bg-dark p-8 md:p-10 rounded-[2.5rem] shadow-[12px_12px_0_#000] flex-1">
-              <div className="flex items-center gap-3 mb-8 pb-8 border-b-2 border-bg-base">
-                <div className="w-10 h-10 bg-bg-base border-2 border-bg-dark rounded-xl flex items-center justify-center">
-                  <Zap className="w-5 h-5 text-bg-dark fill-current" />
-                </div>
-                <h2 className="text-xl font-black uppercase tracking-tight">METADATA</h2>
+          {/* RIGHT COLUMN: Card 1 — Metadata (compact) */}
+          <div className="lg:col-span-5 bg-white border-4 border-bg-dark p-5 rounded-2xl shadow-[6px_6px_0_#000]">
+            <div className="flex items-center gap-2.5 mb-4 pb-3 border-b-2 border-bg-base">
+              <div className="w-8 h-8 bg-bg-base border-2 border-bg-dark rounded-lg flex items-center justify-center">
+                <Zap className="w-4 h-4 text-bg-dark fill-current" />
               </div>
-              
-              <div className="space-y-10">
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 bg-zinc-50 border-2 border-zinc-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <User className="w-5 h-5 text-zinc-400" />
-                  </div>
-                  <div>
-                    <div className="text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-1">STUDENT NAME</div>
-                    <div className="font-black text-sm uppercase tracking-tight text-bg-dark">{certificate.profiles?.full_name || 'Abhishek Singh'}</div>
-                    <div className="text-[8px] font-bold text-zinc-400 uppercase mt-1">{certificate.profiles?.section} • BATCH {certificate.profiles?.batch}</div>
-                  </div>
+              <h2 className="text-sm font-black uppercase tracking-tight">Metadata</h2>
+            </div>
+            
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-zinc-50 border border-zinc-200 rounded-lg flex items-center justify-center shrink-0">
+                  <User className="w-4 h-4 text-zinc-400" />
                 </div>
-
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 bg-zinc-50 border-2 border-zinc-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <FileText className="w-5 h-5 text-zinc-400" />
-                  </div>
-                  <div>
-                    <div className="text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-1">CERTIFICATE</div>
-                    <div className="font-black text-sm uppercase tracking-tight text-bg-dark">{certificate.title}</div>
-                    <div className="text-[8px] font-bold text-zinc-400 uppercase mt-1">ISSUED BY {certificate.issuer || 'UNKNOWN'}</div>
-                  </div>
+                <div className="min-w-0">
+                  <div className="text-[8px] font-black uppercase tracking-widest text-zinc-400">Student</div>
+                  <div className="font-black text-xs uppercase tracking-tight text-bg-dark truncate">{certificate.profiles?.full_name || 'Unknown'}</div>
+                  <div className="text-[7px] font-bold text-zinc-400 uppercase">{certificate.profiles?.section} • {certificate.profiles?.batch}</div>
                 </div>
+              </div>
 
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 bg-zinc-50 border-2 border-zinc-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <Calendar className="w-5 h-5 text-zinc-400" />
-                  </div>
-                  <div>
-                    <div className="text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-1">DATE ISSUED</div>
-                    <div className="font-black text-sm uppercase tracking-tight text-bg-dark">{certificate.issue_date || '2026-04-27'}</div>
-                  </div>
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-zinc-50 border border-zinc-200 rounded-lg flex items-center justify-center shrink-0">
+                  <FileText className="w-4 h-4 text-zinc-400" />
+                </div>
+                <div className="min-w-0">
+                  <div className="text-[8px] font-black uppercase tracking-widest text-zinc-400">Certificate</div>
+                  <div className="font-black text-xs uppercase tracking-tight text-bg-dark truncate">{certificate.title}</div>
+                  <div className="text-[7px] font-bold text-zinc-400 uppercase">By {certificate.issuer || 'Unknown'}</div>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-zinc-50 border border-zinc-200 rounded-lg flex items-center justify-center shrink-0">
+                  <Calendar className="w-4 h-4 text-zinc-400" />
+                </div>
+                <div>
+                  <div className="text-[8px] font-black uppercase tracking-widest text-zinc-400">Issued</div>
+                  <div className="font-black text-xs uppercase tracking-tight text-bg-dark">{certificate.issue_date || '—'}</div>
                 </div>
               </div>
             </div>
+          </div>
 
-            <div className="bg-zinc-900 border-4 border-bg-dark p-6 rounded-[2rem] shadow-[8px_8px_0_#000]">
-              <div className="flex flex-col gap-4">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-2">
-                    <ShieldAlert className="w-5 h-5 text-accent" />
-                    <h3 className="text-sm font-black uppercase tracking-widest text-white">AI Trust Assessment</h3>
-                  </div>
-                  <div className={`px-3 py-1 rounded-lg border-2 text-xs font-black ${
-                    (certificate.score || 0) >= 35 ? 'bg-green-500/20 text-green-400 border-green-500/50' : 
-                    (certificate.score || 0) >= 20 ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/50' : 
-                    'bg-red-500/20 text-red-400 border-red-500/50'
-                  }`}>
-                    SCORE: {certificate.score || 0}/50
-                  </div>
-                </div>
-                
-                <p className="text-xs text-zinc-400 font-medium leading-relaxed bg-black/40 p-4 rounded-xl border border-zinc-800">
-                  {certificate.extracted_text?.authenticity_reasoning || "No AI reasoning provided for this artifact."}
-                </p>
-
-                <div className="mt-2 flex flex-col gap-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Manual Score Override (Max 50)</label>
-                  <input 
-                    type="number" 
-                    max={50} 
-                    min={0}
-                    value={overrideScore}
-                    onChange={(e) => setOverrideScore(Math.min(50, Math.max(0, parseInt(e.target.value) || 0)))}
-                    className="w-full bg-black/40 border-2 border-zinc-700 rounded-xl px-4 py-3 text-white font-bold text-sm focus:border-accent outline-none transition-colors"
-                  />
-                </div>
+          {/* RIGHT COLUMN: Card 2 — AI Assessment + Actions (compact) */}
+          <div className="lg:col-span-5 bg-zinc-900 border-4 border-bg-dark p-5 rounded-2xl shadow-[6px_6px_0_#000] flex flex-col gap-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <ShieldAlert className="w-4 h-4 text-accent" />
+                <h3 className="text-xs font-black uppercase tracking-widest text-white">AI Assessment</h3>
+              </div>
+              <div className={`px-2.5 py-0.5 rounded-md border-2 text-[10px] font-black ${
+                (certificate.score || 0) >= 35 ? 'bg-green-500/20 text-green-400 border-green-500/50' : 
+                (certificate.score || 0) >= 20 ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/50' : 
+                'bg-red-500/20 text-red-400 border-red-500/50'
+              }`}>
+                {certificate.score || 0}/50
               </div>
             </div>
+            
+            <p className="text-[11px] text-zinc-400 font-medium leading-relaxed bg-black/40 p-3 rounded-xl border border-zinc-800 max-h-32 overflow-y-auto">
+              {certificate.extracted_text?.authenticity_reasoning || "No AI reasoning provided for this artifact."}
+            </p>
 
-            <div className="space-y-4 mt-8">
+            {/* Score Override */}
+            <div className="flex items-center gap-3">
+              <label className="text-[9px] font-black uppercase tracking-widest text-zinc-500 whitespace-nowrap">Override</label>
+              <input 
+                type="number" 
+                max={50} 
+                min={0}
+                value={overrideScore}
+                onChange={(e) => setOverrideScore(Math.min(50, Math.max(0, parseInt(e.target.value) || 0)))}
+                className="flex-1 bg-black/40 border-2 border-zinc-700 rounded-lg px-3 py-2 text-white font-bold text-xs focus:border-accent outline-none transition-colors"
+              />
+              <span className="text-zinc-600 text-[9px] font-bold">/50</span>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="grid grid-cols-2 gap-3 mt-1">
               <button 
                 onClick={() => handleAudit("approved")}
                 disabled={isProcessing}
-                className="w-full bg-[#70e2a4] hover:bg-[#5cd091] text-bg-dark font-black uppercase tracking-widest text-xs py-5 rounded-2xl border-4 border-bg-dark shadow-[6px_6px_0_#000] flex items-center justify-center gap-3 transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:opacity-50"
+                className="bg-[#70e2a4] hover:bg-[#5cd091] text-bg-dark font-black uppercase tracking-widest text-[10px] py-3 rounded-xl border-3 border-bg-dark shadow-[4px_4px_0_#000] flex items-center justify-center gap-2 transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:opacity-50"
               >
-                {isProcessing ? <Loader2 className="w-5 h-5 animate-spin" /> : <CheckCircle2 className="w-5 h-5" />}
-                VERIFY & AWARD {overrideScore} PTS
+                {isProcessing ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
+                Verify
               </button>
               
               <button 
                 onClick={() => handleAudit("rejected")}
                 disabled={isProcessing}
-                className="w-full bg-white hover:bg-zinc-50 text-red-500 font-black uppercase tracking-widest text-xs py-5 rounded-2xl border-4 border-bg-dark shadow-[6px_6px_0_#000] flex items-center justify-center gap-3 transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:opacity-50"
+                className="bg-white hover:bg-zinc-50 text-red-500 font-black uppercase tracking-widest text-[10px] py-3 rounded-xl border-3 border-bg-dark shadow-[4px_4px_0_#000] flex items-center justify-center gap-2 transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:opacity-50"
               >
-                {isProcessing ? <Loader2 className="w-5 h-5 animate-spin" /> : <XCircle className="w-5 h-5" />}
-                REJECT ARTIFACT
+                {isProcessing ? <Loader2 className="w-4 h-4 animate-spin" /> : <XCircle className="w-4 h-4" />}
+                Reject
               </button>
             </div>
           </div>

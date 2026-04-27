@@ -35,6 +35,7 @@ const SECTION_OPTIONS = [
 export default function FacultyLoginPage() {
   const router = useRouter();
   const { login } = useAuth();
+  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [batch, setBatch] = useState("");
@@ -45,37 +46,49 @@ export default function FacultyLoginPage() {
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     login({
-      id: "FAC2024001",
-      name: "Dr. Faculty",
+      id: "FAC2024" + Math.floor(Math.random() * 1000),
+      name: fullName || "Faculty",
       email: email || "admin@adamas.edu",
       role: "faculty",
-      facultyId: facultyId || "FAC-CS-001",
+      facultyId: facultyId || "FAC-CS-" + Math.floor(Math.random() * 1000),
       sectionsManaged: sections.length > 0 ? sections.map(s => `CS-${s}`) : ["CS-A", "CS-B"],
     });
     router.push("/faculty/dashboard");
   };
 
   return (
-    <div className="min-h-screen bg-bg-surface flex flex-col md:flex-row-reverse font-sans selection:bg-accent selection:text-bg-dark">
+    <div className="h-screen bg-bg-surface flex flex-col md:flex-row-reverse font-sans selection:bg-accent selection:text-bg-dark overflow-hidden">
       {/* Right side: Form (Reversed for faculty) */}
-      <div className="w-full md:w-[45%] bg-bg-surface p-6 sm:p-10 md:p-16 flex flex-col justify-center border-b-4 md:border-b-0 md:border-l-4 border-border">
+      <div className="w-full md:w-[45%] bg-bg-surface p-4 sm:p-6 md:p-8 flex flex-col justify-center border-b-4 md:border-b-0 md:border-l-4 border-border h-full">
         <div className="max-w-md w-full mx-auto">
-          <Link href="/" className="inline-flex items-center gap-2 mb-8 md:mb-12">
-            <div className="w-7 h-7 md:w-8 md:h-8 bg-accent rounded-lg flex items-center justify-center transform rotate-45">
-              <ShieldCheck className="w-3.5 h-3.5 md:w-4 md:h-4 text-[#09090b] -rotate-45" />
+          <Link href="/" className="inline-flex items-center gap-2 mb-4 md:mb-6">
+            <div className="w-6 h-6 md:w-7 md:h-7 bg-accent rounded-lg flex items-center justify-center transform rotate-45">
+              <ShieldCheck className="w-3 h-3 md:w-3.5 md:h-3.5 text-[#09090b] -rotate-45" />
             </div>
-            <span className="font-black text-xl md:text-2xl tracking-tighter uppercase text-text-primary">ADAMAS REGISTRY</span>
+            <span className="font-black text-lg md:text-xl tracking-tighter uppercase text-text-primary">ADAMAS REGISTRY</span>
           </Link>
 
-          <h1 className="text-3xl xs:text-4xl md:text-5xl font-black uppercase tracking-tighter leading-none mb-4 text-text-primary">
+          <h1 className="text-2xl xs:text-3xl md:text-4xl font-black uppercase tracking-tighter leading-none mb-2 text-text-primary">
             FACULTY<br />
             <span className="text-accent">AUTHORITY</span>
           </h1>
-          <p className="text-text-secondary font-bold mb-8 md:mb-10 text-[10px] md:text-sm uppercase tracking-widest">
+          <p className="text-text-secondary font-bold mb-4 md:mb-6 text-[9px] md:text-xs uppercase tracking-widest leading-none">
             Authenticate to access registry controls
           </p>
 
-          <form onSubmit={handleLogin} className="space-y-4 md:space-y-6">
+          <form onSubmit={handleLogin} className="space-y-3 md:space-y-4">
+            <div className="space-y-1.5 md:space-y-2">
+              <label className="text-[10px] md:text-xs font-black uppercase tracking-widest text-text-secondary ml-2">Full Name</label>
+              <input 
+                type="text" 
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                className="input-field"
+                placeholder="Dr. Abhishek Singh"
+                required
+              />
+            </div>
+
             <div className="space-y-1.5 md:space-y-2">
               <label className="text-[10px] md:text-xs font-black uppercase tracking-widest text-text-secondary ml-2">Authority ID (Email)</label>
               <input 

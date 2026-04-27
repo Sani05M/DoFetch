@@ -39,7 +39,7 @@ export function DashboardLayout({ children, allowedRole }: DashboardLayoutProps)
   };
 
   return (
-    <div className="min-h-screen bg-bg-base text-text-primary font-sans selection:bg-accent selection:text-bg-dark">
+    <div className={`min-h-screen bg-bg-base text-text-primary font-sans selection:bg-accent selection:text-bg-dark ${user.role === "faculty" ? "theme-faculty" : ""}`}>
       {/* Same Navbar as Landing Page but for Dashboards */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-bg-surface/80 backdrop-blur-md border-b border-border">
         <div className="max-w-6xl mx-auto px-4 md:px-6 h-16 md:h-20 flex items-center justify-between">
@@ -83,9 +83,9 @@ export function DashboardLayout({ children, allowedRole }: DashboardLayoutProps)
                 </Link>
               </motion.div>
               <motion.button 
-                whileTap={{ scale: 0.95 }}
+                whileTap={{ x: 2, y: 2 }}
                 onClick={handleLogout} 
-                className="bg-bg-dark text-text-on-dark px-3 md:px-5 py-2 md:py-2.5 rounded-xl md:rounded-2xl text-[8px] md:text-[10px] font-black uppercase tracking-widest hover:bg-zinc-800 transition-all flex items-center gap-2 border-2 border-border shadow-[3px_3px_0_#000]"
+                className="bg-[#ef4444] text-white px-3 md:px-5 py-2 md:py-2.5 rounded-lg md:rounded-xl text-[8px] md:text-[10px] font-black uppercase tracking-widest hover:bg-red-600 transition-all flex items-center gap-2 border-2 border-bg-dark shadow-[3px_3px_0_#000] active:shadow-none"
               >
                 <LogOut className="w-3.5 h-3.5 md:w-4 md:h-4" />
                 <span className="hidden sm:inline">Logout</span>

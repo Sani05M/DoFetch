@@ -68,8 +68,8 @@ export default function AuditDetailPage({ params }: { params: Promise<{ id: stri
               
               <div className="space-y-1">
                 <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500 flex items-center gap-2"><User className="w-3 h-3"/> STUDENT</p>
-                <p className="font-bold text-lg text-bg-dark">Abhishek Singh</p>
-                <p className="text-xs font-bold text-zinc-400 uppercase">22CS001 • Sec A</p>
+                <p className="font-bold text-lg text-bg-dark">Authorized Scholar</p>
+                <p className="text-xs font-bold text-zinc-400 uppercase">Roll No: CS24-XXX • Sec A</p>
               </div>
 
               <div className="space-y-1">

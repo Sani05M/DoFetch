@@ -10,6 +10,7 @@ import * as XLSX from "xlsx";
 import { AnimatePresence, motion } from "framer-motion";
 
 import { AnimatedSection, containerVariants, itemVariants } from "@/components/AnimatedSection";
+import { useAuth } from "@/context/AuthContext";
 
 const LEADERBOARD = [
   { id: "22CS001", name: "Abhishek Singh", section: "A", certCount: 8, weightage: 950 },
@@ -33,6 +34,7 @@ const PIE_DATA = [
 ];
 
 export default function FacultyDashboard() {
+  const { user } = useAuth();
   const { certificates } = useCertificates();
   const [selectedStudent, setSelectedStudent] = useState<typeof LEADERBOARD[0] | null>(null);
 
@@ -40,9 +42,9 @@ export default function FacultyDashboard() {
   const verifiedCount = certificates.filter(c => c.status === "verified" || c.status === "approved").length;
 
   const stats = [
-    { label: "Pending Audits", count: pendingCount, icon: <AlertCircle />, color: "bg-red-500 text-[#09090b] border-red-600 shadow-[6px_6px_0_#991b1b]" },
-    { label: "Active Scholars", count: 1240, icon: <Users />, color: "bg-bg-surface border-border shadow-[6px_6px_0_#e4e4e7] dark:shadow-[6px_6px_0_#27272a]" },
-    { label: "Total Issuance", count: verifiedCount + 840, icon: <FileCheck />, color: "bg-accent border-bg-dark text-[#09090b] shadow-[6px_6px_0_#09090b]" },
+    { label: "Pending Audits", count: pendingCount, icon: <AlertCircle />, color: "bg-[#ef4444] text-white border-bg-dark shadow-[6px_6px_0_#000]" },
+    { label: "Active Scholars", count: 1240, icon: <Users />, color: "bg-bg-surface text-text-primary border-bg-dark shadow-[6px_6px_0_#000]" },
+    { label: "Total Issuance", count: verifiedCount + 840, icon: <FileCheck />, color: "bg-accent text-bg-dark border-bg-dark shadow-[6px_6px_0_#000]" },
   ];
 
   const handleDownloadSection = (sectionName: string, e: React.MouseEvent) => {
@@ -67,15 +69,11 @@ export default function FacultyDashboard() {
     <DashboardLayout allowedRole="faculty">
       {/* Hero Header */}
       <AnimatedSection>
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 md:mb-16 gap-6 md:gap-8">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-bg-surface rounded-full text-xs font-bold mb-4 border border-border">
-              <ShieldCheck className="w-3 h-3 text-red-500" />
-              <span>Auth Level 4 Active</span>
-            </div>
-            <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter leading-[0.85]">
-              FACULTY<br/>
-              <span className="text-accent">COMMAND CENTER</span>
+            <h1 className="text-3xl xs:text-4xl md:text-5xl font-black uppercase tracking-tighter leading-none text-text-primary">
+              WELCOME BACK,<br/>
+              <span className="text-accent">{user?.name || "AUTHORITY"}</span>
             </h1>
           </div>
           <div className="flex flex-col sm:flex-row items-center gap-4 shrink-0">
@@ -103,7 +101,7 @@ export default function FacultyDashboard() {
       >
         {stats.map((stat, i) => (
           <motion.div key={i} variants={itemVariants}>
-            <div className={`bento-card flex flex-col justify-between h-48 border-3 hover:-translate-y-1 hover:shadow-lg transition-all ${stat.color}`}>
+            <div className={`bento-card flex flex-col justify-between h-48 border-4 ${stat.color}`}>
               <div className="flex items-center justify-between">
                 <div className="w-12 h-12 bg-bg-surface rounded-xl flex items-center justify-center text-text-primary shadow-sm border-2 border-border">
                   {React.cloneElement(stat.icon as React.ReactElement<{ className?: string }>, { className: "w-6 h-6" })}
@@ -124,7 +122,7 @@ export default function FacultyDashboard() {
         {/* Charts Section */}
         <div className="lg:col-span-2 flex flex-col gap-6">
           <AnimatedSection delay={0.2}>
-            <div className="bento-card border-3 border-text-primary shadow-[4px_4px_0_var(--color-text-primary)] p-6 md:p-8 flex-1">
+            <div className="bento-card border-4 border-text-primary shadow-[8px_8px_0_#000] p-6 md:p-8 flex-1">
               <h3 className="text-lg md:text-xl font-black uppercase tracking-widest mb-6 text-text-primary">Ingestion Velocity</h3>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
@@ -143,7 +141,7 @@ export default function FacultyDashboard() {
           </AnimatedSection>
           
           <AnimatedSection delay={0.3}>
-            <div className="bento-card border-3 border-text-primary shadow-[4px_4px_0_var(--color-text-primary)] p-6 md:p-8 flex flex-col md:flex-row items-center gap-8">
+            <div className="bento-card border-4 border-text-primary shadow-[8px_8px_0_#000] p-6 md:p-8 flex flex-col md:flex-row items-center gap-8">
               <div className="flex-1 w-full text-center md:text-left">
                 <h3 className="text-lg md:text-xl font-black uppercase tracking-widest mb-2 text-text-primary">Audit Distribution</h3>
                 <p className="text-[10px] md:text-sm font-bold text-text-secondary mb-6 uppercase tracking-widest">Global Registry Status</p>
@@ -183,8 +181,8 @@ export default function FacultyDashboard() {
         </div>
 
         {/* Leaderboard Section */}
-        <AnimatedSection delay={0.4} className="h-full">
-          <div className="bento-card border-3 border-text-primary shadow-[4px_4px_0_var(--color-text-primary)] p-0 overflow-hidden flex flex-col h-full">
+        <AnimatedSection delay={0.4}>
+          <div className="bento-card border-4 border-text-primary shadow-[8px_8px_0_#000] p-0 overflow-hidden flex flex-col h-full">
             <div className="p-6 md:p-8 border-b-3 border-text-primary bg-bg-surface">
               <h3 className="text-lg md:text-xl font-black uppercase tracking-widest flex items-center gap-3 text-text-primary">
                 <Award className="w-5 h-5 md:w-6 md:h-6 text-accent" />
@@ -236,7 +234,7 @@ export default function FacultyDashboard() {
             { label: "Section D", count: 61, icon: "D" }
           ].map((cluster, i) => (
             <motion.div key={i} variants={itemVariants}>
-              <div className="bento-card p-6 flex flex-col items-center text-center group transition-all border-3 md:border-4 border-border relative overflow-hidden h-full">
+              <div className="bento-card p-6 flex flex-col items-center text-center border-4 border-bg-dark shadow-[6px_6px_0_#000] relative overflow-hidden h-full bg-bg-surface">
                 <button 
                   onClick={(e) => handleDownloadSection(cluster.label, e)}
                   className="absolute top-4 right-4 w-9 h-9 md:w-10 md:h-10 bg-bg-surface border-2 border-border rounded-lg md:rounded-xl flex items-center justify-center text-text-secondary hover:text-text-primary hover:border-text-primary hover:shadow-[2px_2px_0_var(--color-text-primary)] transition-all z-10 cursor-pointer"
@@ -246,7 +244,7 @@ export default function FacultyDashboard() {
                 </button>
 
                 <Link href="/faculty/sections" className="w-full flex flex-col items-center cursor-pointer pt-6">
-                  <div className="w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-bg-dark text-text-on-dark flex items-center justify-center text-3xl md:text-4xl font-black mb-4 md:mb-6 group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-300">
+                  <div className="w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-bg-dark text-text-on-dark flex items-center justify-center text-3xl md:text-4xl font-black mb-4 md:mb-6 transition-transform duration-300">
                     {cluster.icon}
                   </div>
                   <h4 className="text-lg md:text-xl font-black uppercase tracking-tight mb-1 md:mb-2 group-hover:text-accent transition-colors">{cluster.label}</h4>

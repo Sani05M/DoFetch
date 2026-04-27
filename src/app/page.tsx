@@ -23,43 +23,106 @@ import {
   ArrowRight
 } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { AnimatedSection, containerVariants, itemVariants } from "@/components/AnimatedSection";
 
 export default function Home() {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
+
   return (
     <div className="min-h-screen bg-bg-base text-text-primary font-sans selection:bg-accent selection:text-bg-dark">
       {/* Navbar */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-bg-surface/80 backdrop-blur-md border-b border-border">
-        <div className="max-w-6xl mx-auto px-4 md:px-6 h-16 flex items-center justify-between">
+        <div className="max-w-6xl mx-auto px-4 md:px-6 h-16 md:h-20 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-6 h-6 bg-accent rounded flex items-center justify-center transform rotate-45">
-              <Zap className="w-3 h-3 text-bg-dark -rotate-45 fill-current" />
+            <div className="w-7 h-7 md:w-8 md:h-8 bg-accent rounded flex items-center justify-center transform rotate-45">
+              <Zap className="w-4 h-4 md:w-5 md:h-5 text-bg-dark -rotate-45 fill-current" />
             </div>
-            <span className="font-black text-lg md:text-xl tracking-tighter text-text-primary">ADAMAS</span>
+            <span className="font-black text-xl md:text-2xl tracking-tighter text-text-primary uppercase">ADAMAS</span>
           </Link>
           
-          <div className="hidden lg:flex items-center gap-8 text-sm font-bold">
+          <div className="hidden lg:flex items-center gap-8 text-sm font-black uppercase tracking-tight">
             <Link href="#" className="hover:text-accent transition-colors">Academics</Link>
             <Link href="#" className="hover:text-accent transition-colors">Registry</Link>
             <Link href="#" className="hover:text-accent transition-colors">Verification</Link>
             <Link href="#" className="hover:text-accent transition-colors">Support</Link>
           </div>
 
-          <div className="flex items-center gap-2 md:gap-4">
+          <div className="flex items-center gap-3 md:gap-4">
             <ThemeToggle />
-            <Link href="/login/faculty" className="text-[10px] md:text-sm font-bold hover:text-accent transition-colors">
-              Faculty
-            </Link>
-            <motion.div 
-              whileTap={{ scale: 0.95 }}
-            >
-              <Link href="/login/student" className="bg-accent text-[#09090b] px-4 md:px-5 py-2 rounded-full text-xs md:text-sm font-black shadow-[4px_4px_0px_#09090b] border-2 border-bg-dark block transition-colors">
-                Vault
+            <div className="hidden sm:flex items-center gap-4">
+              <Link href="/login/faculty" className="text-xs md:text-sm font-black uppercase tracking-tight hover:text-accent transition-colors">
+                Faculty
               </Link>
-            </motion.div>
+              <motion.div whileTap={{ scale: 0.95 }}>
+                <Link href="/login/student" className="bg-accent text-[#000] px-5 md:px-6 py-2.5 rounded-xl text-xs md:text-sm font-black shadow-[4px_4px_0px_#000] border-2 border-bg-dark block transition-all hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_#000]">
+                  Vault
+                </Link>
+              </motion.div>
+            </div>
+            
+            {/* Mobile Menu Button */}
+            <button 
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="lg:hidden w-10 h-10 flex flex-col items-center justify-center gap-1.5 bg-bg-surface border-2 border-border rounded-xl"
+            >
+              <motion.span 
+                animate={isMobileMenuOpen ? { rotate: 45, y: 6 } : { rotate: 0, y: 0 }}
+                className="w-5 h-0.5 bg-text-primary rounded-full"
+              />
+              <motion.span 
+                animate={isMobileMenuOpen ? { opacity: 0 } : { opacity: 1 }}
+                className="w-5 h-0.5 bg-text-primary rounded-full"
+              />
+              <motion.span 
+                animate={isMobileMenuOpen ? { rotate: -45, y: -6 } : { rotate: 0, y: 0 }}
+                className="w-5 h-0.5 bg-text-primary rounded-full"
+              />
+            </button>
           </div>
         </div>
+
+        {/* Mobile Menu Overlay */}
+        <AnimatePresence>
+          {isMobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="lg:hidden absolute top-16 md:top-20 left-0 right-0 bg-bg-surface border-b-4 border-border shadow-2xl p-6 z-40"
+            >
+              <div className="flex flex-col gap-6 text-center">
+                {["Academics", "Registry", "Verification", "Support"].map((item) => (
+                  <Link 
+                    key={item} 
+                    href="#" 
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="text-xl font-black uppercase tracking-tighter hover:text-accent transition-colors"
+                  >
+                    {item}
+                  </Link>
+                ))}
+                <div className="h-px bg-border my-2" />
+                <div className="flex flex-col gap-4">
+                  <Link 
+                    href="/login/faculty"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="text-lg font-black uppercase tracking-tighter text-text-secondary"
+                  >
+                    Faculty Authority
+                  </Link>
+                  <Link 
+                    href="/login/student"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="bg-accent text-[#09090b] py-4 rounded-2xl text-xl font-black uppercase tracking-tighter border-3 border-bg-dark shadow-[4px_4px_0px_#09090b]"
+                  >
+                    Student Vault
+                  </Link>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </nav>
 
       <div className="pt-16">
@@ -80,9 +143,10 @@ export default function Home() {
             </p>
 
             <motion.div
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ x: 6, y: 6 }}
             >
-              <Link href="/login/student" className="bg-accent text-[#09090b] px-6 md:px-8 py-3 md:py-4 rounded-full text-base md:text-lg font-black inline-flex items-center gap-3 shadow-[6px_6px_0px_#09090b] md:shadow-[8px_8px_0px_#09090b] border-2 md:border-4 border-bg-dark transition-colors">
+              <Link href="/login/student" className="bg-accent text-[#000] px-6 md:px-8 py-3 md:py-4 rounded-full text-base md:text-lg font-black inline-flex items-center gap-3 shadow-[6px_6px_0px_#000] md:shadow-[8px_8px_0px_#000] border-2 md:border-4 border-bg-dark transition-all active:shadow-none">
                 Enter Student Portal
                 <ArrowRight className="w-4 h-4 md:w-5 md:h-5" />
               </Link>
@@ -196,7 +260,7 @@ export default function Home() {
             </h3>
             <p className="text-text-secondary font-medium mb-8 md:mb-12 text-sm md:text-base px-4">Discover all the registry technology you need in one place.</p>
             
-            <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+            <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
               {[
                 { icon: <ShieldCheck />, label: "Instant Verification" },
                 { icon: <FileText />, label: "Digital Transcripts" },
@@ -207,7 +271,10 @@ export default function Home() {
                 { icon: <Globe />, label: "Global Access" },
                 { icon: <Zap />, label: "Fast Sync" },
               ].map((item, i) => (
-                <div key={i} className="bg-bg-surface border-2 border-border rounded-xl md:rounded-2xl p-4 md:p-6 flex items-center justify-between group hover:bg-accent hover:border-accent transition-colors cursor-pointer text-text-primary hover:text-[#09090b]">
+                <div 
+                  key={i} 
+                  className="bg-bg-surface border-3 border-border rounded-xl md:rounded-2xl shadow-[4px_4px_0_#000] p-4 md:p-6 flex items-center justify-between group hover:bg-accent transition-all"
+                >
                   <span className="font-black text-[11px] md:text-sm uppercase tracking-tight">{item.label}</span>
                   <div className="w-8 h-8 md:w-10 md:h-10 bg-bg-base border border-border rounded-lg flex items-center justify-center shadow-sm text-text-secondary group-hover:text-[#09090b] group-hover:bg-white group-hover:border-transparent">
                     {React.cloneElement(item.icon as React.ReactElement<{ className?: string }>, { className: "w-4 h-4 md:w-5 md:h-5" })}
@@ -236,7 +303,10 @@ export default function Home() {
                   { icon: <ShieldCheck />, title: "FACULTY AUTHORIZED", desc: "Only authorized Adamas faculty can issue or amend academic records." },
                   { icon: <FileText />, title: "YOUR CONTROL", desc: "You decide who sees your records via time-limited sharing links." },
                 ].map((item, i) => (
-                  <div key={i} className="bg-text-on-dark/5 rounded-xl md:rounded-2xl p-6 md:p-8 border border-text-on-dark/10 hover:border-accent transition-colors">
+                  <div 
+                    key={i} 
+                    className="bg-text-on-dark/5 rounded-xl md:rounded-2xl p-6 md:p-8 border border-text-on-dark/10 hover:border-accent hover:bg-text-on-dark/10 transition-all"
+                  >
                     <div className="w-10 h-10 md:w-12 md:h-12 bg-text-on-dark/10 rounded-full flex items-center justify-center text-accent mb-4 md:mb-6">
                       {React.cloneElement(item.icon as React.ReactElement<{ className?: string }>, { className: "w-5 h-5 md:w-6 md:h-6" })}
                     </div>
@@ -260,7 +330,7 @@ export default function Home() {
             </h3>
             <p className="text-text-secondary font-medium mb-10 md:mb-12 text-sm md:text-base px-4">See what Adamas scholars say about the digital vault.</p>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 text-left">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 text-left">
               {[
                 { name: "INCREDIBLY FAST", desc: "Sharing my verified transcript with recruiters took literally 10 seconds. No more waiting for paper copies!" },
                 { name: "EASY TO USE", desc: "The vault interface is beautiful. I can see all my semester results and certificates in one place." },
@@ -269,7 +339,10 @@ export default function Home() {
                 { name: "BEAUTIFUL DESIGN", desc: "I didn't expect a university portal to look this good. It feels like a premium app." },
                 { name: "SECURE & PRIVATE", desc: "I feel safe knowing my academic data is heavily encrypted and only shared when I choose." },
               ].map((item, i) => (
-                <div key={i} className="bg-accent rounded-xl md:rounded-2xl p-6 md:p-8 flex flex-col justify-between text-[#09090b]">
+                <div 
+                  key={i} 
+                  className="bg-accent rounded-xl md:rounded-2xl p-6 md:p-8 flex flex-col justify-between text-[#000] border-3 border-bg-dark shadow-[4px_4px_0_#000] transition-all"
+                >
                   <div>
                     <h4 className="font-black text-lg md:text-xl uppercase tracking-tighter mb-4">{item.name}</h4>
                     <p className="text-xs md:text-sm font-medium mb-6">"{item.desc}"</p>
@@ -316,8 +389,11 @@ export default function Home() {
               <h2 className="text-4xl md:text-6xl font-black text-accent uppercase tracking-tighter mb-6 md:mb-8 leading-[0.9]">
                 OWN YOUR ACADEMIC<br />FUTURE
               </h2>
-              <motion.div whileTap={{ scale: 0.95 }}>
-                <Link href="/login/student" className="bg-accent text-[#09090b] px-6 md:px-8 py-3 md:py-4 rounded-full text-base md:text-lg font-black inline-block">
+              <motion.div 
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ x: 4, y: 4 }}
+              >
+                <Link href="/login/student" className="btn-primary bg-accent text-[#09090b] px-8 py-4 rounded-full text-base md:text-lg font-black inline-block transition-all active:shadow-none">
                   Access Vault
                 </Link>
               </motion.div>

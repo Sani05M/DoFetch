@@ -63,18 +63,21 @@ export function CustomSelect({ options, value, onChange, multiple = false, place
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
-          "w-full bg-white border-2 border-zinc-200 rounded-xl px-4 py-3 text-sm font-bold text-bg-dark flex items-center justify-between transition-colors focus:outline-none focus:border-accent hover:border-zinc-300",
-          isOpen && "border-accent"
+          "w-full bg-bg-surface border-3 border-border rounded-xl px-5 py-3.5 md:py-4 text-[10px] md:text-xs font-black uppercase tracking-widest text-text-primary flex items-center justify-between transition-all focus:outline-none focus:border-accent hover:shadow-[4px_4px_0_var(--color-border)]",
+          isOpen && "border-accent shadow-[4px_4px_0_var(--color-accent)]"
         )}
       >
-        <span className={!value || (multiple && value.length === 0) ? "text-zinc-400" : "text-bg-dark"}>
+        <span className={cn(
+          "truncate pr-4",
+          (!value || (multiple && value.length === 0)) ? "text-text-secondary" : "text-text-primary"
+        )}>
           {getDisplayValue()}
         </span>
-        <ChevronDown className={cn("w-4 h-4 text-zinc-400 transition-transform", isOpen && "rotate-180")} />
+        <ChevronDown className={cn("w-4 h-4 md:w-5 md:h-5 text-text-secondary transition-transform shrink-0", isOpen && "rotate-180 text-accent")} />
       </button>
 
       {isOpen && (
-        <div className="absolute z-50 w-full mt-2 bg-white border-3 border-bg-dark rounded-xl shadow-[4px_4px_0_#09090b] overflow-hidden max-h-60 overflow-y-auto">
+        <div className="absolute z-[100] w-full mt-3 bg-bg-surface border-4 border-bg-dark rounded-2xl shadow-[6px_6px_0_#09090b] overflow-hidden max-h-[60vh] md:max-h-80 overflow-y-auto no-scrollbar">
           {options.map((option) => {
             const isSelected = multiple 
               ? (Array.isArray(value) && value.includes(option.value))
@@ -85,12 +88,12 @@ export function CustomSelect({ options, value, onChange, multiple = false, place
                 key={option.value}
                 onClick={() => handleSelect(option.value)}
                 className={cn(
-                  "px-4 py-3 text-sm font-bold cursor-pointer transition-colors flex items-center justify-between",
-                  isSelected ? "bg-accent/10 text-bg-dark" : "text-zinc-600 hover:bg-zinc-100 hover:text-bg-dark"
+                  "px-5 py-4 md:py-5 text-[10px] md:text-xs font-black uppercase tracking-widest cursor-pointer transition-colors flex items-center justify-between border-b-2 border-border last:border-0",
+                  isSelected ? "bg-accent text-[#09090b]" : "text-text-secondary hover:bg-bg-base hover:text-text-primary"
                 )}
               >
-                <span>{option.label}</span>
-                {isSelected && <Check className="w-4 h-4 text-accent" />}
+                <span className="truncate pr-4">{option.label}</span>
+                {isSelected && <Check className="w-4 h-4 md:w-5 md:h-5 text-[#09090b] stroke-[4px]" />}
               </div>
             );
           })}

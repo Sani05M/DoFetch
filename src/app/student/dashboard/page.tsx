@@ -9,6 +9,7 @@ import { CertificateCard, Certificate } from "@/components/CertificateCard";
 import { CertificatePreview } from "@/components/CertificatePreview";
 import { AnimatedSection, containerVariants, itemVariants } from "@/components/AnimatedSection";
 import { LayoutGrid, CheckCircle2, Clock, Plus, Zap, ArrowUpRight } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 import { useAuth } from "@/context/AuthContext";
 
@@ -29,30 +30,36 @@ export default function StudentDashboard() {
   };
 
   const stats = [
-    { label: "Total Artifacts", count: certificates.length, icon: <LayoutGrid />, color: "bg-bg-surface border-border shadow-[4px_4px_0_#e4e4e7] dark:shadow-[4px_4px_0_#27272a]" },
-    { label: "Verified Syncs", count: verifiedCount, icon: <CheckCircle2 />, color: "bg-accent border-bg-dark shadow-[4px_4px_0_#09090b] text-[#09090b]" },
-    { label: "Pending Nodes", count: pendingCount, icon: <Clock />, color: "bg-bg-dark text-text-on-dark border-text-primary shadow-[4px_4px_0_#fafafa]" },
+    { label: "Total Artifacts", count: certificates.length, icon: <LayoutGrid />, color: "bg-bg-surface border-border shadow-[4px_4px_0_#000]" },
+    { label: "Verified Syncs", count: verifiedCount, icon: <CheckCircle2 />, color: "bg-accent border-bg-dark shadow-[4px_4px_0_#000] text-[#000]" },
+    { label: "Pending Nodes", count: pendingCount, icon: <Clock />, color: "bg-bg-dark text-text-on-dark border-text-primary shadow-[4px_4px_0_#000]" },
   ];
 
   return (
     <DashboardLayout allowedRole="student">
       {/* Hero Header */}
       <AnimatedSection>
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 md:mb-16 gap-6 md:gap-8">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-bg-surface rounded-full text-xs font-bold mb-4 border border-border">
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-bg-surface rounded-full text-[10px] md:text-xs font-black uppercase tracking-widest mb-4 border border-border shadow-[4px_4px_0_#000]">
               <Zap className="w-3 h-3 text-accent fill-current" />
               <span>Institutional Mesh Active</span>
             </div>
-            <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter leading-none">
+            <h1 className="text-3xl xs:text-4xl md:text-5xl font-black uppercase tracking-tighter leading-none text-text-primary">
               WELCOME BACK,<br/>
               <span className="text-accent">{user?.name || "STUDENT"}</span>
             </h1>
           </div>
-          <Link href="/student/upload" className="btn-primary shrink-0">
-            <Plus className="w-5 h-5" />
-            Sync Credential
-          </Link>
+          <motion.div 
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ x: 3, y: 3 }}
+            className="w-full md:w-auto"
+          >
+            <Link href="/student/upload" className="w-full btn-primary px-8 py-3 md:py-4 rounded-xl md:rounded-2xl transition-all active:shadow-none shadow-[4px_4px_0_#000]">
+              <Plus className="w-5 h-5 stroke-[3px]" />
+              Sync Credential
+            </Link>
+          </motion.div>
         </div>
       </AnimatedSection>
 
@@ -61,7 +68,7 @@ export default function StudentDashboard() {
         variants={containerVariants}
         initial="hidden"
         animate="show"
-        className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-20"
+        className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-16 md:mb-20"
       >
         {stats.map((stat, i) => {
           const href = stat.label === "Total Artifacts" 
@@ -71,17 +78,25 @@ export default function StudentDashboard() {
               : "/student/certificates?filter=pending";
               
           return (
-            <motion.div key={i} variants={itemVariants}>
-              <Link href={href} className={`bento-card flex flex-col justify-between h-48 border-3 hover:-translate-y-1 hover:shadow-lg transition-all cursor-pointer ${stat.color}`}>
+            <motion.div 
+              key={i} 
+              variants={itemVariants}
+              whileHover={{ x: -1, y: -1 }}
+              whileTap={{ x: 3, y: 3 }}
+            >
+              <Link href={href} className={cn(
+                "bento-3d flex flex-col justify-between h-40 md:h-48 transition-all active:shadow-none p-6 md:p-8 rounded-2xl md:rounded-3xl",
+                stat.color
+              )}>
                 <div className="flex items-center justify-between">
-                  <div className="w-12 h-12 bg-bg-surface rounded-xl flex items-center justify-center text-text-primary shadow-sm border-2 border-border">
-                    {React.cloneElement(stat.icon as React.ReactElement<{ className?: string }>, { className: "w-6 h-6" })}
+                  <div className="w-10 h-10 md:w-12 md:h-12 bg-bg-surface rounded-xl flex items-center justify-center text-text-primary shadow-sm border-2 border-border">
+                    {React.cloneElement(stat.icon as React.ReactElement<{ className?: string }>, { className: "w-5 h-5 md:w-6 md:h-6" })}
                   </div>
-                  <ArrowUpRight className="w-6 h-6 opacity-30 group-hover:opacity-100 transition-opacity" />
+                  <ArrowUpRight className="w-5 h-5 md:w-6 md:h-6 opacity-30 group-hover:opacity-100 transition-opacity" />
                 </div>
                 <div>
-                  <span className="text-6xl font-black tracking-tighter">{stat.count}</span>
-                  <p className="text-sm font-bold uppercase tracking-tight mt-1 opacity-80">{stat.label}</p>
+                  <span className="text-4xl md:text-6xl font-black tracking-tighter leading-none">{stat.count}</span>
+                  <p className="text-[10px] md:text-sm font-black uppercase tracking-widest mt-1 md:mt-2 opacity-80">{stat.label}</p>
                 </div>
               </Link>
             </motion.div>
@@ -91,9 +106,9 @@ export default function StudentDashboard() {
 
       {/* Recent Activity */}
       <AnimatedSection delay={0.4}>
-        <div className="flex items-center justify-between mb-8">
-          <h2 className="text-4xl font-black uppercase tracking-tighter">RECENTLY SYNCED</h2>
-          <Link href="/student/certificates" className="text-sm font-black uppercase tracking-widest border-b-4 border-accent pb-1 hover:text-accent transition-colors">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
+          <h2 className="text-2xl md:text-4xl font-black uppercase tracking-tighter text-text-primary">RECENTLY SYNCED</h2>
+          <Link href="/student/certificates" className="w-fit text-[10px] md:text-sm font-black uppercase tracking-widest border-b-3 md:border-b-4 border-accent pb-1 hover:text-accent transition-colors">
             View Full Vault
           </Link>
         </div>
@@ -102,7 +117,7 @@ export default function StudentDashboard() {
           variants={containerVariants}
           initial="hidden"
           animate="show"
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8"
         >
           {certificates.slice(0, 6).map((cert) => (
             <motion.div key={cert.id} variants={itemVariants}>

@@ -51,26 +51,26 @@ export default function StudentLoginPage() {
   return (
     <div className="min-h-screen bg-bg-surface flex flex-col md:flex-row font-sans selection:bg-accent selection:text-bg-dark">
       {/* Left side: Form */}
-      <div className="w-full md:w-[45%] bg-bg-surface p-8 md:p-16 flex flex-col justify-center border-r-4 border-border">
+      <div className="w-full md:w-[45%] bg-bg-surface p-6 sm:p-10 md:p-16 flex flex-col justify-center border-b-4 md:border-b-0 md:border-r-4 border-border">
         <div className="max-w-md w-full mx-auto">
-          <Link href="/" className="inline-flex items-center gap-2 mb-12">
-            <div className="w-8 h-8 bg-accent rounded-lg flex items-center justify-center transform rotate-45">
-              <Zap className="w-4 h-4 text-bg-dark -rotate-45 fill-current" />
+          <Link href="/" className="inline-flex items-center gap-2 mb-8 md:mb-12">
+            <div className="w-7 h-7 md:w-8 md:h-8 bg-accent rounded-lg flex items-center justify-center transform rotate-45">
+              <Zap className="w-3.5 h-3.5 md:w-4 md:h-4 text-bg-dark -rotate-45 fill-current" />
             </div>
-            <span className="font-black text-2xl tracking-tighter uppercase text-text-primary">ADAMAS REGISTRY</span>
+            <span className="font-black text-xl md:text-2xl tracking-tighter uppercase text-text-primary">ADAMAS REGISTRY</span>
           </Link>
 
-          <h1 className="text-5xl font-black uppercase tracking-tighter leading-none mb-4 text-text-primary">
+          <h1 className="text-3xl xs:text-4xl md:text-5xl font-black uppercase tracking-tighter leading-none mb-4 text-text-primary">
             STUDENT<br />
             <span className="text-text-secondary">PORTAL</span>
           </h1>
-          <p className="text-text-secondary font-bold mb-10 text-sm uppercase tracking-widest">
+          <p className="text-text-secondary font-bold mb-8 md:mb-10 text-[10px] md:text-sm uppercase tracking-widest">
             Enter your credentials to access your vault
           </p>
 
-          <form onSubmit={handleLogin} className="space-y-6">
-            <div className="space-y-2">
-              <label className="text-xs font-black uppercase tracking-widest text-text-secondary ml-2">University Email</label>
+          <form onSubmit={handleLogin} className="space-y-4 md:space-y-6">
+            <div className="space-y-1.5 md:space-y-2">
+              <label className="text-[10px] md:text-xs font-black uppercase tracking-widest text-text-secondary ml-2">University Email</label>
               <input 
                 type="email" 
                 value={email}
@@ -81,9 +81,9 @@ export default function StudentLoginPage() {
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="text-xs font-black uppercase tracking-widest text-text-secondary ml-2">Batch</label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1.5 md:space-y-2">
+                <label className="text-[10px] md:text-xs font-black uppercase tracking-widest text-text-secondary ml-2">Batch</label>
                 <CustomSelect 
                   options={BATCH_OPTIONS}
                   value={batch}
@@ -91,8 +91,8 @@ export default function StudentLoginPage() {
                   placeholder="Select Batch"
                 />
               </div>
-              <div className="space-y-2">
-                <label className="text-xs font-black uppercase tracking-widest text-text-secondary ml-2">Department</label>
+              <div className="space-y-1.5 md:space-y-2">
+                <label className="text-[10px] md:text-xs font-black uppercase tracking-widest text-text-secondary ml-2">Department</label>
                 <CustomSelect 
                   options={DEPT_OPTIONS}
                   value={dept}
@@ -102,9 +102,9 @@ export default function StudentLoginPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="text-xs font-black uppercase tracking-widest text-text-secondary ml-2">Roll Number</label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1.5 md:space-y-2">
+                <label className="text-[10px] md:text-xs font-black uppercase tracking-widest text-text-secondary ml-2">Roll Number</label>
                 <input 
                   type="text" 
                   value={rollNo}
@@ -114,8 +114,8 @@ export default function StudentLoginPage() {
                   required
                 />
               </div>
-              <div className="space-y-2">
-                <label className="text-xs font-black uppercase tracking-widest text-text-secondary ml-2">Section</label>
+              <div className="space-y-1.5 md:space-y-2">
+                <label className="text-[10px] md:text-xs font-black uppercase tracking-widest text-text-secondary ml-2">Section</label>
                 <input 
                   type="text" 
                   value={section}
@@ -127,8 +127,8 @@ export default function StudentLoginPage() {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <label className="text-xs font-black uppercase tracking-widest text-text-secondary ml-2">Registration Number</label>
+            <div className="space-y-1.5 md:space-y-2">
+              <label className="text-[10px] md:text-xs font-black uppercase tracking-widest text-text-secondary ml-2">Registration Number</label>
               <input 
                 type="text" 
                 value={regNo}
@@ -139,8 +139,8 @@ export default function StudentLoginPage() {
               />
             </div>
 
-            <div className="space-y-2">
-              <label className="text-xs font-black uppercase tracking-widest text-text-secondary ml-2">Secure Password</label>
+            <div className="space-y-1.5 md:space-y-2">
+              <label className="text-[10px] md:text-xs font-black uppercase tracking-widest text-text-secondary ml-2">Secure Password</label>
               <input 
                 type="password" 
                 value={password}
@@ -151,14 +151,14 @@ export default function StudentLoginPage() {
               />
             </div>
 
-            <button type="submit" className="w-full btn-primary py-4 text-lg mt-4 shadow-[4px_4px_0_#09090b] hover:translate-y-[2px] hover:shadow-[2px_2px_0_#09090b] transition-all">
+            <button type="submit" className="w-full btn-primary py-4 text-base md:text-lg mt-4 shadow-[4px_4px_0_#09090b] hover:translate-y-[2px] hover:shadow-[2px_2px_0_#09090b] transition-all">
               Authenticate
               <ArrowRight className="w-5 h-5" />
             </button>
           </form>
 
-          <div className="mt-12 text-center">
-            <p className="text-xs font-bold text-text-secondary uppercase tracking-widest">
+          <div className="mt-8 md:mt-12 text-center">
+            <p className="text-[10px] md:text-xs font-bold text-text-secondary uppercase tracking-widest">
               Secured by <span className="text-text-primary font-black">Adamas Cryptography</span>
             </p>
           </div>

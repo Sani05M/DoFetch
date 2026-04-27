@@ -81,7 +81,7 @@ function StudentVaultContent() {
           variants={containerVariants}
           initial="hidden"
           animate="show"
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8"
         >
           {filteredCertificates.map((cert) => (
             <motion.div key={cert.id} variants={itemVariants}>
@@ -94,60 +94,62 @@ function StudentVaultContent() {
         </motion.div>
       ) : (
         <AnimatedSection delay={0.2}>
-          <div className="bento-card p-0 overflow-hidden bg-bg-surface">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="border-b-4 border-border bg-bg-base">
-                  <th className="px-6 py-4 text-sm font-black uppercase tracking-widest text-text-secondary">Title</th>
-                  <th className="px-6 py-4 text-sm font-black uppercase tracking-widest text-text-secondary">Status</th>
-                  <th className="px-6 py-4 text-sm font-black uppercase tracking-widest text-text-secondary">Date</th>
-                  <th className="px-6 py-4 text-sm font-black uppercase tracking-widest text-text-secondary text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y-2 divide-border">
-                {filteredCertificates.map((cert) => {
-                  const isVerified = cert.status === "verified" || cert.status === "approved";
-                  return (
-                    <tr 
-                      key={cert.id} 
-                      onClick={() => handlePreview(cert)}
-                      className="group hover:bg-accent hover:border-text-primary transition-colors cursor-pointer"
-                    >
-                      <td className="px-6 py-5">
-                        <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 rounded-xl bg-bg-dark flex items-center justify-center text-accent group-hover:bg-bg-surface border-2 border-bg-dark">
-                            <Zap className="w-5 h-5 fill-current" />
+          <div className="bento-card p-0 overflow-hidden bg-bg-surface border-2 md:border-4">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse min-w-[700px] md:min-w-0">
+                <thead>
+                  <tr className="border-b-4 border-border bg-bg-base">
+                    <th className="px-4 md:px-6 py-4 text-[10px] md:text-sm font-black uppercase tracking-widest text-text-secondary">Title</th>
+                    <th className="px-4 md:px-6 py-4 text-[10px] md:text-sm font-black uppercase tracking-widest text-text-secondary">Status</th>
+                    <th className="px-4 md:px-6 py-4 text-[10px] md:text-sm font-black uppercase tracking-widest text-text-secondary">Date</th>
+                    <th className="px-4 md:px-6 py-4 text-[10px] md:text-sm font-black uppercase tracking-widest text-text-secondary text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y-2 divide-border">
+                  {filteredCertificates.map((cert) => {
+                    const isVerified = cert.status === "verified" || cert.status === "approved";
+                    return (
+                      <tr 
+                        key={cert.id} 
+                        onClick={() => handlePreview(cert)}
+                        className="group hover:bg-accent hover:border-text-primary transition-colors cursor-pointer"
+                      >
+                        <td className="px-4 md:px-6 py-4 md:py-5">
+                          <div className="flex items-center gap-3 md:gap-4">
+                            <div className="w-10 h-10 md:w-12 md:h-12 rounded-lg md:rounded-xl bg-bg-dark flex items-center justify-center text-accent group-hover:bg-bg-surface border-2 border-bg-dark shrink-0">
+                              <Zap className="w-4 h-4 md:w-5 md:h-5 fill-current" />
+                            </div>
+                            <span className="font-black text-sm md:text-lg text-text-primary group-hover:text-[#09090b] uppercase tracking-tight truncate max-w-[150px] md:max-w-none">{cert.title}</span>
                           </div>
-                          <span className="font-black text-lg text-text-primary group-hover:text-[#09090b] uppercase tracking-tight">{cert.title}</span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-5">
-                        <div className={`inline-flex items-center px-3 py-1.5 rounded-full border-2 text-xs font-black uppercase tracking-widest ${isVerified ? "bg-green-100 text-green-700 border-green-700" : "bg-yellow-100 text-yellow-700 border-yellow-500"}`}>
-                          {isVerified ? "VERIFIED" : "PENDING"}
-                        </div>
-                      </td>
-                      <td className="px-6 py-5 text-sm font-bold uppercase tracking-widest text-text-secondary group-hover:text-[#09090b]">{cert.issueDate}</td>
-                      <td className="px-6 py-5 text-right">
-                        <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <button 
-                            onClick={(e) => e.stopPropagation()}
-                            className="p-2 hover:bg-bg-surface rounded-lg transition-colors text-text-primary group-hover:text-[#09090b] border-2 border-transparent hover:border-text-primary"
-                          >
-                            <Download className="w-5 h-5" />
-                          </button>
-                          <button 
-                            onClick={(e) => e.stopPropagation()}
-                            className="p-2 hover:bg-bg-surface rounded-lg transition-colors text-text-primary group-hover:text-[#09090b] border-2 border-transparent hover:border-text-primary"
-                          >
-                            <MoreVertical className="w-5 h-5" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                        </td>
+                        <td className="px-4 md:px-6 py-4 md:py-5">
+                          <div className={`inline-flex items-center px-2 md:px-3 py-1 md:py-1.5 rounded-full border-2 text-[10px] font-black uppercase tracking-widest ${isVerified ? "bg-green-100 text-green-700 border-green-700" : "bg-yellow-100 text-yellow-700 border-yellow-500"}`}>
+                            {isVerified ? "VERIFIED" : "PENDING"}
+                          </div>
+                        </td>
+                        <td className="px-4 md:px-6 py-4 md:py-5 text-[10px] md:text-sm font-bold uppercase tracking-widest text-text-secondary group-hover:text-[#09090b]">{cert.issueDate}</td>
+                        <td className="px-4 md:px-6 py-4 md:py-5 text-right">
+                          <div className="flex items-center justify-end gap-1 md:gap-2 md:opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button 
+                              onClick={(e) => e.stopPropagation()}
+                              className="p-1.5 md:p-2 hover:bg-bg-surface rounded-lg transition-colors text-text-primary group-hover:text-[#09090b] border-2 border-transparent hover:border-text-primary"
+                            >
+                              <Download className="w-4 h-4 md:w-5 md:h-5" />
+                            </button>
+                            <button 
+                              onClick={(e) => e.stopPropagation()}
+                              className="p-1.5 md:p-2 hover:bg-bg-surface rounded-lg transition-colors text-text-primary group-hover:text-[#09090b] border-2 border-transparent hover:border-text-primary"
+                            >
+                              <MoreVertical className="w-4 h-4 md:w-5 md:h-5" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
         </AnimatedSection>
       )}

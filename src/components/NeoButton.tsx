@@ -20,15 +20,29 @@ export function NeoButton({
   
   const variants = {
     primary: "bg-accent text-bg-dark border-bg-dark dark:border-bg-base shadow-[4px_4px_0px_#09090b] dark:shadow-[4px_4px_0px_#fafafa] hover:bg-accent-hover",
-    secondary: "bg-bg-dark text-bg-base border-bg-dark dark:bg-bg-base dark:text-bg-dark dark:border-bg-base shadow-[4px_4px_0px_rgba(0,0,0,0.2)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.2)]",
+    secondary: "bg-bg-dark text-text-on-dark border-bg-dark dark:bg-bg-base dark:text-bg-dark dark:border-bg-base shadow-[4px_4px_0px_rgba(0,0,0,0.2)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.2)]",
     outline: "bg-bg-surface text-text-primary border-bg-dark dark:border-bg-base shadow-[4px_4px_0px_#09090b] dark:shadow-[4px_4px_0px_#fafafa] hover:bg-bg-base",
   };
 
+  const shadowColor = "var(--color-bg-dark)";
+
   return (
     <motion.button
-      whileHover={{ x: -2, y: -2, boxShadow: "6px 6px 0px var(--tw-shadow-color, #09090b)" }}
-      whileTap={{ x: 4, y: 4, boxShadow: "0px 0px 0px var(--tw-shadow-color, #09090b)" }}
-      transition={{ type: "spring", stiffness: 500, damping: 15 }}
+      whileHover={{ 
+        x: -2, 
+        y: -2, 
+        boxShadow: `6px 6px 0px ${shadowColor}` 
+      }}
+      whileTap={{ 
+        x: 2, 
+        y: 2, 
+        boxShadow: `0px 0px 0px ${shadowColor}` 
+      }}
+      transition={{ 
+        type: "spring", 
+        stiffness: 400, 
+        damping: 15 
+      }}
       className={cn(
         baseStyles,
         variants[variant],

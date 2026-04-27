@@ -26,6 +26,7 @@ export const metadata: Metadata = {
 
 import { ClerkProvider, SignInButton, UserButton } from "@clerk/nextjs";
 import { AuthProvider } from "@/context/AuthContext";
+import { ClientErrorBoundary } from "@/components/ClientErrorBoundary";
 
 export default function RootLayout({
   children,
@@ -41,7 +42,9 @@ export default function RootLayout({
       >
         <body className="bg-bg-base text-text-primary selection:bg-accent/30">
           <AuthProvider>
-            {children}
+            <ClientErrorBoundary>
+              {children}
+            </ClientErrorBoundary>
           </AuthProvider>
         </body>
       </html>

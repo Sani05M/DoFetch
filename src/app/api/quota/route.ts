@@ -28,7 +28,7 @@ export async function GET(req: Request) {
     return NextResponse.json({ 
       success: true, 
       used: count || 0,
-      limit: 9999,
+      limit: 10,
       reset_at: new Date(today.getTime() + 24 * 60 * 60 * 1000).toISOString()
     });
   } catch (error: any) {

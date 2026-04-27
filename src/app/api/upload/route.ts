@@ -31,9 +31,9 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Failed to verify daily quota." }, { status: 500 });
     }
 
-    if (count !== null && count >= 9999) {
+    if (count !== null && count >= 10) {
       return NextResponse.json({ 
-        error: "Daily Limit Reached: You have reached your limit of 9999 certificate uploads for today. Please try again tomorrow." 
+        error: "Daily Limit Reached: You have reached your limit of 10 certificate uploads for today. Please try again tomorrow." 
       }, { status: 429 });
     }
 

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { extractCertificateData } from "@/lib/gemini";
 import { supabase } from "@/lib/supabase";
+import { rateLimit } from "@/lib/rateLimit";
 import crypto from "crypto";
 
 // Allow up to 60 seconds for Gemini Vision to process the certificate
@@ -42,6 +43,15 @@ export async function POST(req: Request) {
     
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Rate limit: max 5 extractions per minute per user
+    const limit = rateLimit(userId, 5, 60 * 1000);
+    if (!limit.allowed) {
+      return NextResponse.json(
+        { error: `Rate limit exceeded. Try again in ${limit.resetIn} seconds.` },
+        { status: 429 }
+      );
     }
 
     const formData = await req.formData();

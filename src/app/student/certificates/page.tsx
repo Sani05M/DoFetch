@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { DashboardLayout } from "@/components/DashboardLayout";
@@ -10,7 +10,7 @@ import { CertificatePreview } from "@/components/CertificatePreview";
 import { AnimatedSection, containerVariants, itemVariants } from "@/components/AnimatedSection";
 import { Grid, List as ListIcon, Search, Filter, ShieldCheck, Zap, Download, MoreVertical } from "lucide-react";
 
-export default function StudentVault() {
+function StudentVaultContent() {
   const { certificates } = useCertificates();
   const searchParams = useSearchParams();
   const filterParam = searchParams.get("filter");
@@ -36,7 +36,7 @@ export default function StudentVault() {
   }, [certificates, filterParam]);
 
   return (
-    <DashboardLayout allowedRole="student">
+    <>
       <AnimatedSection>
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8">
           <div>
@@ -157,6 +157,22 @@ export default function StudentVault() {
         isOpen={isPreviewOpen}
         onClose={() => setIsPreviewOpen(false)}
       />
+    </>
+  );
+}
+
+export default function StudentVault() {
+  return (
+    <DashboardLayout allowedRole="student">
+      <Suspense fallback={
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-2xl font-black uppercase tracking-widest text-zinc-400 animate-pulse">
+            LOADING VAULT...
+          </div>
+        </div>
+      }>
+        <StudentVaultContent />
+      </Suspense>
     </DashboardLayout>
   );
 }

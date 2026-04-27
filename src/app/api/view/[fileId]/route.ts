@@ -35,15 +35,19 @@ export async function GET(
 
     // 3. Fetch binary data
     const binaryRes = await fetch(downloadUrl);
+    if (!binaryRes.ok) throw new Error("Failed to fetch from Telegram storage");
+    
     const buffer = await binaryRes.arrayBuffer();
 
     // Use raw Response for maximum header control
     return new Response(buffer, {
       headers: {
         "Content-Type": contentType,
-        "Content-Disposition": "inline",
+        "Content-Disposition": `inline; filename="artifact_${fileId.slice(0, 8)}"`,
         "Cache-Control": "public, max-age=31536000, immutable",
-        "X-Content-Type-Options": "nosniff"
+        "X-Content-Type-Options": "nosniff",
+        "Access-Control-Allow-Origin": "*", // Allow cross-origin preview if needed
+        "Access-Control-Allow-Methods": "GET",
       },
     });
   } catch (err) {

@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Zap, Download, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -31,6 +32,37 @@ interface CertificateCardProps {
 
 export function CertificateCard({ certificate, className, onClick }: CertificateCardProps) {
   const isVerified = certificate.status === "verified" || certificate.status === "approved";
+  const [copied, setCopied] = useState(false);
+
+  const handleShare = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const shareUrl = `${window.location.origin}/verify/${certificate.id}`;
+    navigator.clipboard.writeText(shareUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleDownload = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!certificate.fileId) return;
+    
+    try {
+      const response = await fetch(`/api/view/${certificate.fileId}`);
+      if (!response.ok) throw new Error("Download failed");
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `${certificate.title.replace(/\s+/g, '_')}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to download artifact.");
+    }
+  };
 
   return (
     <motion.div 
@@ -69,29 +101,21 @@ export function CertificateCard({ certificate, className, onClick }: Certificate
 
       <div className="flex items-center gap-3 pt-6 border-t-4 border-black/10 mt-8">
         <button 
-          onClick={(e) => {
-            e.stopPropagation();
-            // Simple download logic
-            const link = document.createElement('a');
-            link.href = '#';
-            link.setAttribute('download', 'certificate.pdf');
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-          }}
+          onClick={handleDownload}
           className="flex-1 border-4 border-black py-4 rounded-full text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 bg-white hover:bg-zinc-50 shadow-[4px_4px_0_#000] active:shadow-none active:translate-x-1 active:translate-y-1"
         >
           <Download className="w-4 h-4" />
           DOWNLOAD
         </button>
         <button 
-          onClick={(e) => {
-            e.stopPropagation();
-            onClick?.();
-          }}
-          className="w-14 h-14 border-4 border-black rounded-2xl hover:bg-zinc-50 transition-all bg-white flex items-center justify-center shadow-[4px_4px_0_#000] active:shadow-none active:translate-x-1 active:translate-y-1"
+          onClick={handleShare}
+          className={cn(
+            "w-14 h-14 border-4 border-black rounded-2xl transition-all flex items-center justify-center shadow-[4px_4px_0_#000] active:shadow-none active:translate-x-1 active:translate-y-1",
+            copied ? "bg-accent" : "bg-white hover:bg-zinc-50"
+          )}
+          title="Share Certificate"
         >
-          <ExternalLink className="w-5 h-5" />
+          <ExternalLink className={cn("w-5 h-5", copied ? "text-bg-dark" : "text-black")} />
         </button>
       </div>
     </motion.div>

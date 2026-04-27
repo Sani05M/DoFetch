@@ -6,7 +6,7 @@ export async function resolveModel(): Promise<{ genAI: GoogleGenerativeAI; model
   if (!apiKey) throw new Error("GEMINI_API_KEY is not set");
 
   const genAI = new GoogleGenerativeAI(apiKey);
-  const PREFERENCE = ["gemini-2.0-flash", "gemini-1.5-flash", "gemini-flash-latest", "gemini-pro"];
+  const PREFERENCE = ["gemini-flash-lite-latest", "gemini-2.5-flash-lite", "gemini-2.5-flash", "gemini-2.0-flash-lite", "gemini-2.0-flash"];
 
   for (const apiVersion of ["v1", "v1beta"]) {
     try {
@@ -51,14 +51,14 @@ export async function extractCertificateData(file: File) {
     const base64Data = Buffer.from(buffer).toString("base64");
 
     const prompt = `
-      Analyze this certificate and extract in JSON:
+      You are an expert academic credential verifier. Analyze this certificate/document image and extract the following in pure JSON format:
       {
-        "issuer": "string",
-        "issue_date": "YYYY-MM-DD",
-        "score": number,
-        "summary": "string"
+        "issuer": "string (the name of the issuing authority/company)",
+        "issue_date": "YYYY-MM-DD (extract the issue date)",
+        "score": number (Evaluate the authenticity, effort, and value of this certificate and give it a weightage score OUT OF 50. Use strict criteria.),
+        "authenticity_reasoning": "string (Explain why you gave this score out of 50. Check for signs of forgery, the reputation of the issuer, and the effort required to obtain it.)"
       }
-      Only return JSON.
+      Only return valid JSON without Markdown blocks.
     `;
 
     const result = await safeGenerateContent(model, [
@@ -73,8 +73,8 @@ export async function extractCertificateData(file: File) {
     return {
       issuer: "Unknown (Manual Verification Required)",
       issue_date: new Date().toISOString().split('T')[0],
-      score: 50.0,
-      summary: "Extraction failed"
+      score: 0,
+      authenticity_reasoning: "AI verification failed. Manual verification required."
     };
   }
 }

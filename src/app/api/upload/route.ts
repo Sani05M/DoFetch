@@ -4,6 +4,9 @@ import { uploadToTelegram } from "@/lib/telegram";
 import { supabase } from "@/lib/supabase";
 import { extractCertificateData } from "@/lib/gemini";
 
+// Allow up to 60 seconds for Gemini Vision to process the certificate
+export const maxDuration = 60;
+
 export async function POST(req: Request) {
   try {
     const { userId } = await auth();
@@ -44,7 +47,10 @@ export async function POST(req: Request) {
         issue_date: extractedData.issue_date,
         score: extractedData.score,
         status: "pending",
-        extracted_text: { raw_filename: file.name, note: "AI extraction pending final verify" }
+        extracted_text: { 
+          raw_filename: file.name, 
+          authenticity_reasoning: extractedData.authenticity_reasoning 
+        }
       })
       .select()
       .single();

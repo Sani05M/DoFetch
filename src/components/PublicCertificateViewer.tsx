@@ -110,7 +110,19 @@ export function PublicCertificateViewer({ certificate }: PublicCertificateViewer
                       <div className="text-base md:text-xl font-black uppercase tracking-tight text-zinc-200 truncate">
                         {certificate.profiles?.full_name || 'Verified Scholar'}
                       </div>
-                      <div className="text-[8px] text-zinc-500 mt-0.5 font-mono uppercase truncate">ID: {certificate.student_id || certificate.id.split('-')[0]}</div>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <div className="text-[8px] text-zinc-500 font-mono uppercase truncate">ID: {certificate.student_id || certificate.id.split('-')[0]}</div>
+                        {certificate.score !== undefined && (
+                          <div className={`px-2 py-0.5 rounded border text-[8px] font-black uppercase tracking-widest flex items-center gap-1 ${
+                            certificate.score >= 35 ? 'bg-green-500/10 text-green-400 border-green-500/20' : 
+                            certificate.score >= 20 ? 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20' : 
+                            'bg-red-500/10 text-red-400 border-red-500/20'
+                          }`}>
+                            <ShieldCheck className="w-2.5 h-2.5" />
+                            AI SCORE: {certificate.score}/50
+                          </div>
+                        )}
+                      </div>
                     </div>
                     <div className="text-center md:text-right shrink-0">
                        <div className="text-base md:text-xl font-black text-white tracking-tighter mb-1.5">{certificate.issue_date || certificate.created_at?.split('T')[0] || 'N/A'}</div>

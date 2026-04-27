@@ -52,6 +52,8 @@ export default function AuditDetailPage({ params }: { params: Promise<{ id: stri
     }
   };
 
+  const [overrideScore, setOverrideScore] = useState<number>(0);
+
   useEffect(() => {
     async function fetchCert() {
       try {
@@ -63,6 +65,7 @@ export default function AuditDetailPage({ params }: { params: Promise<{ id: stri
 
         if (error) throw error;
         setCertificate(data);
+        setOverrideScore(data.score || 0);
       } catch (err) {
         console.error("Error fetching certificate:", err);
       } finally {
@@ -77,7 +80,7 @@ export default function AuditDetailPage({ params }: { params: Promise<{ id: stri
     try {
       const { error } = await supabase
         .from("certificates")
-        .update({ status })
+        .update({ status, score: overrideScore })
         .eq("id", certId);
 
       if (error) throw error;
@@ -239,14 +242,48 @@ export default function AuditDetailPage({ params }: { params: Promise<{ id: stri
               </div>
             </div>
 
-            <div className="space-y-4">
+            <div className="bg-zinc-900 border-4 border-bg-dark p-6 rounded-[2rem] shadow-[8px_8px_0_#000]">
+              <div className="flex flex-col gap-4">
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-2">
+                    <ShieldAlert className="w-5 h-5 text-accent" />
+                    <h3 className="text-sm font-black uppercase tracking-widest text-white">AI Trust Assessment</h3>
+                  </div>
+                  <div className={`px-3 py-1 rounded-lg border-2 text-xs font-black ${
+                    (certificate.score || 0) >= 35 ? 'bg-green-500/20 text-green-400 border-green-500/50' : 
+                    (certificate.score || 0) >= 20 ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/50' : 
+                    'bg-red-500/20 text-red-400 border-red-500/50'
+                  }`}>
+                    SCORE: {certificate.score || 0}/50
+                  </div>
+                </div>
+                
+                <p className="text-xs text-zinc-400 font-medium leading-relaxed bg-black/40 p-4 rounded-xl border border-zinc-800">
+                  {certificate.extracted_text?.authenticity_reasoning || "No AI reasoning provided for this artifact."}
+                </p>
+
+                <div className="mt-2 flex flex-col gap-2">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Manual Score Override (Max 50)</label>
+                  <input 
+                    type="number" 
+                    max={50} 
+                    min={0}
+                    value={overrideScore}
+                    onChange={(e) => setOverrideScore(Math.min(50, Math.max(0, parseInt(e.target.value) || 0)))}
+                    className="w-full bg-black/40 border-2 border-zinc-700 rounded-xl px-4 py-3 text-white font-bold text-sm focus:border-accent outline-none transition-colors"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-4 mt-8">
               <button 
                 onClick={() => handleAudit("approved")}
                 disabled={isProcessing}
                 className="w-full bg-[#70e2a4] hover:bg-[#5cd091] text-bg-dark font-black uppercase tracking-widest text-xs py-5 rounded-2xl border-4 border-bg-dark shadow-[6px_6px_0_#000] flex items-center justify-center gap-3 transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:opacity-50"
               >
                 {isProcessing ? <Loader2 className="w-5 h-5 animate-spin" /> : <CheckCircle2 className="w-5 h-5" />}
-                VERIFY ARTIFACT
+                VERIFY & AWARD {overrideScore} PTS
               </button>
               
               <button 

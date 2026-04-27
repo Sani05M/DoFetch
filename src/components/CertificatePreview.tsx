@@ -287,7 +287,7 @@ export function CertificatePreview({ certificate, isOpen, onClose, onDelete }: C
                         />
                       )}
                       <AsciiOverlay />
-                      <div className="flex justify-between items-start relative z-20 w-full" style={{ transform: "translateZ(40px)" }}>
+                      <div className="flex justify-between items-start relative z-20 w-full shrink-0" style={{ transform: "translateZ(40px)" }}>
                         <div className="flex items-center gap-3 lg:gap-4">
                           <div className="w-10 h-10 lg:w-14 lg:h-14 bg-accent rounded-xl lg:rounded-2xl flex items-center justify-center transform rotate-12 border-2 border-bg-dark shadow-2xl">
                             <Zap className="w-5 h-5 lg:w-7 lg:h-7 text-bg-dark fill-current" />
@@ -298,13 +298,18 @@ export function CertificatePreview({ certificate, isOpen, onClose, onDelete }: C
                           </div>
                         </div>
                       </div>
-                      <div className="relative z-20" style={{ transform: "translateZ(60px)" }}>
-                        <div className="text-[6px] lg:text-[8px] font-black uppercase tracking-[0.5em] text-accent/60 mb-1 lg:mb-2">CREDENTIAL ARTIFACT</div>
-                        <h3 className="text-xl lg:text-3xl font-black uppercase tracking-tighter leading-tight text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)]">
+                      <div className="relative z-20 flex-1 flex flex-col justify-center py-4 min-h-0" style={{ transform: "translateZ(60px)" }}>
+                        <div className="text-[6px] lg:text-[8px] font-black uppercase tracking-[0.5em] text-accent/60 mb-1 lg:mb-2 shrink-0">CREDENTIAL ARTIFACT</div>
+                        <h3 className={`font-black uppercase tracking-tighter leading-[1] text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)] text-balance ${
+                          certificate.title.length > 60 ? "text-sm lg:text-lg xl:text-xl" :
+                          certificate.title.length > 40 ? "text-base lg:text-xl xl:text-2xl" :
+                          certificate.title.length > 20 ? "text-lg lg:text-2xl xl:text-3xl" :
+                          "text-xl lg:text-[28px] xl:text-[32px]"
+                        }`}>
                           {certificate.title}
                         </h3>
                       </div>
-                      <div className="flex justify-between items-end relative z-20" style={{ transform: "translateZ(50px)" }}>
+                      <div className="flex justify-between items-end relative z-20 shrink-0" style={{ transform: "translateZ(50px)" }}>
                         <div>
                           <div className="text-[6px] lg:text-[8px] font-black uppercase tracking-[0.4em] text-zinc-500 mb-1">HOLDER</div>
                           <div className="text-sm lg:text-lg font-black uppercase tracking-tight text-white leading-none">

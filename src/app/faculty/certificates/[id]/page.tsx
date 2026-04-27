@@ -117,7 +117,7 @@ export default function AuditDetailPage({ params }: { params: Promise<{ id: stri
 
   return (
     <DashboardLayout allowedRole="faculty">
-      <div className="max-w-6xl mx-auto px-4 md:px-0">
+      <div className="w-full max-w-[1600px] mx-auto px-4 md:px-8">
         <Link href="/faculty/certificates" className="inline-flex items-center gap-2 text-sm font-black uppercase tracking-widest text-zinc-500 hover:text-bg-dark mb-8 border-b-2 border-transparent hover:border-bg-dark pb-1 transition-all">
           <ArrowLeft className="w-4 h-4" />
           Back to Queue
@@ -140,9 +140,9 @@ export default function AuditDetailPage({ params }: { params: Promise<{ id: stri
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
           {/* Document Preview Panel - REFINED BENTO DESIGN */}
-          <div className="lg:col-span-2 bg-zinc-900 flex flex-col items-center justify-center min-h-[400px] md:min-h-[650px] border-4 border-bg-dark overflow-hidden relative rounded-[2rem] md:rounded-[2.5rem] shadow-[8px_8px_0_#000] md:shadow-[12px_12px_0_#000]">
+          <div className="lg:col-span-8 bg-zinc-900 flex flex-col items-center justify-center min-h-[500px] md:min-h-[800px] border-4 border-bg-dark overflow-hidden relative rounded-[2rem] md:rounded-[2.5rem] shadow-[8px_8px_0_#000] md:shadow-[12px_12px_0_#000]">
             {isLoadingPreview ? (
               <div className="flex flex-col items-center gap-6">
                 <div className="relative">
@@ -198,7 +198,7 @@ export default function AuditDetailPage({ params }: { params: Promise<{ id: stri
           </div>
 
           {/* Metadata & Actions Panel - REFINED BENTO DESIGN */}
-          <div className="space-y-8 flex flex-col">
+          <div className="lg:col-span-4 flex flex-col gap-8">
             <div className="bg-white border-4 border-bg-dark p-8 md:p-10 rounded-[2.5rem] shadow-[12px_12px_0_#000] flex-1">
               <div className="flex items-center gap-3 mb-8 pb-8 border-b-2 border-bg-base">
                 <div className="w-10 h-10 bg-bg-base border-2 border-bg-dark rounded-xl flex items-center justify-center">

@@ -51,14 +51,16 @@ export async function extractCertificateData(file: File) {
     const base64Data = Buffer.from(buffer).toString("base64");
 
     const prompt = `
-      You are an expert academic credential verifier. Analyze this certificate/document image and extract the following in pure JSON format:
+      You are a hostile, expert forensic credential investigator. Your job is fraud detection. Analyze this certificate/document image for ANY signs of forgery, generic templates, or lack of verification. 
+      Extract the following in pure JSON format:
       {
         "title": "string (the name/title of the course, achievement, or certificate)",
         "issuer": "string (the name of the issuing authority/company/institution)",
         "issue_date": "YYYY-MM-DD (extract the issue date, if none found use null)",
         "type": "string (Classify it strictly as one of: 'Academic Artifact', 'Professional Cert', 'Extracurricular', or 'Other')",
-        "score": number (Evaluate the authenticity, effort, and value of this certificate and give it a weightage score OUT OF 50. Use strict criteria.),
-        "authenticity_reasoning": "string (Explain why you gave this score out of 50. Check for signs of forgery, the reputation of the issuer, and the effort required to obtain it.)"
+        "extracted_verification_link": "string (Extract any URL, QR code text, or unique alphanumeric Certificate ID printed on the document. If NONE exist, output null)",
+        "score": number (Evaluate authenticity OUT OF 50. STRICT RULES: 1. If it looks like a generic Canva/Figma template, max score is 15. 2. If fonts are mismatched or misaligned, score is < 10. 3. If the issuer claims to be a major tech company/university but lacks a verification link/ID, score is strictly < 20.),
+        "authenticity_reasoning": "string (Explain your forensic reasoning. If you scored it low, be brutal and exact about why it looks fake, generic, or lacks verifiable IDs.)"
       }
       Only return valid JSON without Markdown blocks.
     `;

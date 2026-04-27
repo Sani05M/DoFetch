@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { 
   Search, 
@@ -42,6 +43,11 @@ export default function FacultySectionsPage() {
   const [search, setSearch] = useState("");
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [exportMenuOpen, setExportMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const fetchStudents = async () => {
     try {
@@ -281,151 +287,153 @@ export default function FacultySectionsPage() {
       </div>
 
       {/* Student Detail Modal */}
-      <AnimatePresence>
-        {selectedStudent && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-3 md:p-10">
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setSelectedStudent(null)}
-              className="absolute inset-0 bg-zinc-900/40 backdrop-blur-sm cursor-pointer"
-            />
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.95, y: 30 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 30 }}
-              className="relative w-full max-w-5xl bg-bg-surface border-3 md:border-4 border-border rounded-[1.5rem] md:rounded-[2.5rem] shadow-[12px_12px_0_var(--color-text-primary)] overflow-hidden flex flex-col max-h-[90vh] z-10"
-            >
-              {/* Modal Header */}
-              <div className="p-6 md:p-10 border-b-3 md:border-b-4 border-border bg-bg-base flex flex-col sm:flex-row items-center justify-between gap-6">
-                <div className="flex items-center gap-4 md:gap-6 w-full sm:w-auto">
-                  <div className="w-16 h-16 md:w-24 md:h-24 rounded-2xl md:rounded-[2rem] bg-accent border-3 border-bg-dark flex items-center justify-center text-3xl md:text-4xl font-black text-[#09090b] shadow-[4px_4px_0_var(--color-text-primary)] shrink-0">
-                    {selectedStudent.name.charAt(0)}
-                  </div>
-                  <div className="min-w-0">
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 md:gap-4 mb-1 md:mb-2">
-                      <h2 className="text-2xl md:text-4xl font-black uppercase tracking-tighter text-text-primary truncate">{selectedStudent.name}</h2>
-                      <div className="inline-flex px-3 py-1 bg-accent border-2 border-bg-dark rounded-lg text-[8px] md:text-[10px] font-black text-[#09090b] uppercase tracking-widest w-fit">
-                        Section {selectedStudent.section}
-                      </div>
+      {mounted && createPortal(
+        <AnimatePresence>
+          {selectedStudent && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-3 md:p-10">
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setSelectedStudent(null)}
+                className="absolute inset-0 bg-zinc-900/40 backdrop-blur-sm cursor-pointer"
+              />
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.95, y: 30 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 30 }}
+                className="relative w-full max-w-5xl bg-bg-surface border-3 md:border-4 border-border rounded-[1.5rem] md:rounded-[2.5rem] shadow-[12px_12px_0_var(--color-text-primary)] overflow-hidden flex flex-col max-h-[90vh] z-10"
+              >
+                {/* Modal Header */}
+                <div className="shrink-0 p-6 md:p-10 border-b-3 md:border-b-4 border-border bg-bg-base flex flex-col sm:flex-row items-center justify-between gap-6">
+                  <div className="flex items-center gap-4 md:gap-6 w-full sm:w-auto">
+                    <div className="w-16 h-16 md:w-24 md:h-24 rounded-2xl md:rounded-[2rem] bg-accent border-3 border-bg-dark flex items-center justify-center text-3xl md:text-4xl font-black text-[#09090b] shadow-[4px_4px_0_var(--color-text-primary)] shrink-0">
+                      {selectedStudent.name.charAt(0)}
                     </div>
-                    <p className="text-text-secondary font-bold text-[10px] md:text-xs tracking-widest uppercase opacity-70 truncate">
-                      ID: {selectedStudent.rollNo}
-                    </p>
+                    <div className="min-w-0">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 md:gap-4 mb-1 md:mb-2">
+                        <h2 className="text-2xl md:text-4xl font-black uppercase tracking-tighter text-text-primary truncate">{selectedStudent.name}</h2>
+                        <div className="inline-flex px-3 py-1 bg-accent border-2 border-bg-dark rounded-lg text-[8px] md:text-[10px] font-black text-[#09090b] uppercase tracking-widest w-fit">
+                          Section {selectedStudent.section}
+                        </div>
+                      </div>
+                      <p className="text-text-secondary font-bold text-[10px] md:text-xs tracking-widest uppercase opacity-70 truncate">
+                        ID: {selectedStudent.rollNo}
+                      </p>
+                    </div>
+                  </div>
+                  <button 
+                    onClick={() => setSelectedStudent(null)}
+                    className="w-10 h-10 md:w-14 md:h-14 rounded-xl md:rounded-2xl bg-bg-surface border-2 md:border-3 border-border flex items-center justify-center text-text-secondary hover:text-text-primary hover:border-text-primary hover:shadow-[4px_4px_0_var(--color-text-primary)] transition-all self-end sm:self-center"
+                  >
+                    <X className="w-5 h-5 md:w-7 md:h-7 stroke-[3px]" />
+                  </button>
+                </div>
+
+                {/* Modal Content */}
+                <div className="flex-1 overflow-y-auto p-6 md:p-10 bg-bg-surface">
+                  <h3 className="text-xs md:text-sm font-black uppercase tracking-[0.3em] text-text-secondary mb-6 md:mb-8 ml-1">Submitted Artifacts</h3>
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
+                    {getStudentCerts(selectedStudent.id).map((cert) => (
+                      <motion.div 
+                        layoutId={cert.id}
+                        key={cert.id} 
+                        className="bg-bg-base border-3 border-border rounded-[2rem] p-6 md:p-8 flex flex-col justify-between hover:border-text-primary transition-all group relative"
+                      >
+                        {/* Status Watermark */}
+                        <div className="absolute -right-2 -top-2 opacity-[0.03] pointer-events-none overflow-hidden">
+                          <FileText className="w-32 h-32 rotate-12" />
+                        </div>
+
+                        <div className="space-y-6 md:space-y-8 relative z-10">
+                          <div className="flex items-start justify-between gap-4">
+                            <div className="flex items-center gap-4 md:gap-5 min-w-0">
+                              <div className="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-bg-surface border-3 border-border flex items-center justify-center text-text-secondary group-hover:text-accent group-hover:border-accent transition-colors shrink-0 shadow-[4px_4px_0_var(--color-border)]">
+                                <FileText className="w-7 h-7 md:w-8 md:h-8" />
+                              </div>
+                              <div className="min-w-0">
+                                <div className="flex items-center gap-2 mb-1 flex-wrap">
+                                  <h4 className="text-lg md:text-xl font-black text-text-primary leading-tight uppercase tracking-tight truncate">{cert.title}</h4>
+                                  {cert.score > 0 && (
+                                    <span className="text-[10px] font-mono opacity-50 bg-bg-surface px-1.5 rounded border border-border">
+                                      {cert.score}
+                                    </span>
+                                  )}
+                                </div>
+                                <p className="text-[10px] text-text-secondary uppercase tracking-widest font-black opacity-60 truncate">{cert.issuer}</p>
+                              </div>
+                            </div>
+                            <div className="shrink-0 pt-1">
+                              <RatingBadge rating={cert.status === "pending" ? "Pending" : cert.rating as Rating} className="shadow-sm" />
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-4 text-[10px] font-black uppercase tracking-widest text-text-secondary">
+                            <div className="px-4 py-2.5 bg-bg-surface border-2 border-border rounded-xl flex items-center justify-between">
+                              <span className="opacity-50">Type</span>
+                              <span className="text-text-primary">{cert.fileType}</span>
+                            </div>
+                            <div className="px-4 py-2.5 bg-bg-surface border-2 border-border rounded-xl flex items-center justify-between">
+                              <span className="opacity-50">Issued</span>
+                              <span className="text-text-primary">{cert.issueDate}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-4 pt-8 mt-8 border-t-3 border-border relative z-10">
+                          {cert.status === "pending" ? (
+                            <>
+                              <button 
+                                onClick={() => updateStatus(cert.id, "verified")}
+                                className="flex-1 bg-green-500 text-bg-dark py-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all hover:translate-y-[-2px] hover:shadow-[4px_4px_0_#09090b] active:translate-y-[1px] active:shadow-none flex items-center justify-center gap-2"
+                              >
+                                <Check className="w-4 h-4 stroke-[4px]" /> Accept
+                              </button>
+                              <button 
+                                onClick={() => updateStatus(cert.id, "rejected")}
+                                className="flex-1 bg-bg-surface text-text-primary border-2 border-border py-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all hover:bg-zinc-100 flex items-center justify-center gap-2"
+                              >
+                                <X className="w-4 h-4 stroke-[4px]" /> Reject
+                              </button>
+                            </>
+                          ) : (
+                            <div className={cn(
+                              "w-full py-4 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-3 border-2 md:border-3 shadow-inner",
+                              (cert.status === "verified" || cert.status === "approved") ? "bg-green-500/10 border-green-500 text-green-600" : "bg-red-500/10 border-red-500 text-red-600"
+                            )}>
+                              {(cert.status === "verified" || cert.status === "approved") ? (
+                                <><Check className="w-4 h-4 stroke-[4px]" /> Verification Passed</>
+                              ) : (
+                                <><X className="w-4 h-4 stroke-[4px]" /> Submission Rejected</>
+                              )}
+                            </div>
+                          )}
+                          <button 
+                            onClick={() => window.open(`/api/view/${cert.fileId}`, '_blank')}
+                            className="w-14 h-14 bg-bg-surface border-2 border-border rounded-xl flex items-center justify-center text-text-secondary hover:text-text-primary hover:border-text-primary hover:shadow-[4px_4px_0_var(--color-text-primary)] transition-all shrink-0"
+                          >
+                            <ExternalLinkIcon className="w-6 h-6" />
+                          </button>
+                        </div>
+                      </motion.div>
+                    ))}
                   </div>
                 </div>
-                <button 
-                  onClick={() => setSelectedStudent(null)}
-                  className="w-10 h-10 md:w-14 md:h-14 rounded-xl md:rounded-2xl bg-bg-surface border-2 md:border-3 border-border flex items-center justify-center text-text-secondary hover:text-text-primary hover:border-text-primary hover:shadow-[4px_4px_0_var(--color-text-primary)] transition-all self-end sm:self-center"
-                >
-                  <X className="w-5 h-5 md:w-7 md:h-7 stroke-[3px]" />
-                </button>
-              </div>
 
-              {/* Modal Content */}
-              <div className="flex-1 overflow-y-auto p-6 md:p-10 bg-bg-surface">
-                <h3 className="text-xs md:text-sm font-black uppercase tracking-[0.3em] text-text-secondary mb-6 md:mb-8 ml-1">Submitted Artifacts</h3>
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
-                  {getStudentCerts(selectedStudent.id).map((cert) => (
-                    <motion.div 
-                      layoutId={cert.id}
-                      key={cert.id} 
-                      className="bg-bg-base border-3 border-border rounded-[2rem] p-6 md:p-8 flex flex-col justify-between hover:border-text-primary transition-all group relative"
-                    >
-                      {/* Status Watermark */}
-                      <div className="absolute -right-2 -top-2 opacity-[0.03] pointer-events-none overflow-hidden">
-                        <FileText className="w-32 h-32 rotate-12" />
-                      </div>
-
-                      <div className="space-y-6 md:space-y-8 relative z-10">
-                        <div className="flex items-start justify-between gap-4">
-                          <div className="flex items-center gap-4 md:gap-5 min-w-0">
-                            <div className="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-bg-surface border-3 border-border flex items-center justify-center text-text-secondary group-hover:text-accent group-hover:border-accent transition-colors shrink-0 shadow-[4px_4px_0_var(--color-border)]">
-                              <FileText className="w-7 h-7 md:w-8 md:h-8" />
-                            </div>
-                            <div className="min-w-0">
-                              <div className="flex items-center gap-2 mb-1 flex-wrap">
-                                <h4 className="text-lg md:text-xl font-black text-text-primary leading-tight uppercase tracking-tight truncate">{cert.title}</h4>
-                                {cert.score > 0 && (
-                                  <span className="text-[10px] font-mono opacity-50 bg-bg-surface px-1.5 rounded border border-border">
-                                    {cert.score}
-                                  </span>
-                                )}
-                              </div>
-                              <p className="text-[10px] text-text-secondary uppercase tracking-widest font-black opacity-60 truncate">{cert.issuer}</p>
-                            </div>
-                          </div>
-                          <div className="shrink-0 pt-1">
-                            <RatingBadge rating={cert.status === "pending" ? "Pending" : cert.rating as Rating} className="shadow-sm" />
-                          </div>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-4 text-[10px] font-black uppercase tracking-widest text-text-secondary">
-                          <div className="px-4 py-2.5 bg-bg-surface border-2 border-border rounded-xl flex items-center justify-between">
-                            <span className="opacity-50">Type</span>
-                            <span className="text-text-primary">{cert.fileType}</span>
-                          </div>
-                          <div className="px-4 py-2.5 bg-bg-surface border-2 border-border rounded-xl flex items-center justify-between">
-                            <span className="opacity-50">Issued</span>
-                            <span className="text-text-primary">{cert.issueDate}</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-4 pt-8 mt-8 border-t-3 border-border relative z-10">
-                        {cert.status === "pending" ? (
-                          <>
-                            <button 
-                              onClick={() => updateStatus(cert.id, "verified")}
-                              className="flex-1 bg-green-500 text-bg-dark py-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all hover:translate-y-[-2px] hover:shadow-[4px_4px_0_#09090b] active:translate-y-[1px] active:shadow-none flex items-center justify-center gap-2"
-                            >
-                              <Check className="w-4 h-4 stroke-[4px]" /> Accept
-                            </button>
-                            <button 
-                              onClick={() => updateStatus(cert.id, "rejected")}
-                              className="flex-1 bg-bg-surface text-text-primary border-2 border-border py-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all hover:bg-zinc-100 flex items-center justify-center gap-2"
-                            >
-                              <X className="w-4 h-4 stroke-[4px]" /> Reject
-                            </button>
-                          </>
-                        ) : (
-                          <div className={cn(
-                            "w-full py-4 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-3 border-2 md:border-3 shadow-inner",
-                            (cert.status === "verified" || cert.status === "approved") ? "bg-green-500/10 border-green-500 text-green-600" : "bg-red-500/10 border-red-500 text-red-600"
-                          )}>
-                            {(cert.status === "verified" || cert.status === "approved") ? (
-                              <><Check className="w-4 h-4 stroke-[4px]" /> Verification Passed</>
-                            ) : (
-                              <><X className="w-4 h-4 stroke-[4px]" /> Submission Rejected</>
-                            )}
-                          </div>
-                        )}
-                        <button 
-                          onClick={() => window.open(`/api/view/${cert.fileId}`, '_blank')}
-                          className="w-14 h-14 bg-bg-surface border-2 border-border rounded-xl flex items-center justify-center text-text-secondary hover:text-text-primary hover:border-text-primary hover:shadow-[4px_4px_0_var(--color-text-primary)] transition-all shrink-0"
-                        >
-                          <ExternalLinkIcon className="w-6 h-6" />
-                        </button>
-                      </div>
-                    </motion.div>
-                  ))}
+                {/* Modal Footer */}
+                <div className="shrink-0 p-6 md:p-10 border-t-3 md:border-t-4 border-border bg-bg-base flex justify-end">
+                  <button 
+                    onClick={() => setSelectedStudent(null)}
+                    className="w-full sm:w-auto px-8 md:px-12 py-3.5 md:py-4 bg-accent text-bg-dark rounded-xl md:rounded-2xl text-[10px] md:text-xs font-black uppercase tracking-widest hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#09090b] transition-all shadow-[4px_4px_0_#09090b] active:translate-y-[1px] active:shadow-none"
+                  >
+                    Close Session
+                  </button>
                 </div>
-              </div>
-
-              {/* Modal Footer */}
-              <div className="p-6 md:p-10 border-t-3 md:border-t-4 border-border bg-bg-base flex justify-end">
-                <button 
-                  onClick={() => setSelectedStudent(null)}
-                  className="w-full sm:w-auto px-8 md:px-12 py-3.5 md:py-4 bg-accent text-bg-dark rounded-xl md:rounded-2xl text-[10px] md:text-xs font-black uppercase tracking-widest hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#09090b] transition-all shadow-[4px_4px_0_#09090b] active:translate-y-[1px] active:shadow-none"
-                >
-                  Close Session
-                </button>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+      , document.body)}
     </DashboardLayout>
   );
 }

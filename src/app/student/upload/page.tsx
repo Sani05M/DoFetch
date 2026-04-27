@@ -43,6 +43,9 @@ export default function StudentUpload() {
       if (extractedAiData.fileHash) {
         payload.append("file_hash", extractedAiData.fileHash);
       }
+      if (extractedAiData.verificationLink) {
+        payload.append("verification_link", extractedAiData.verificationLink);
+      }
 
       const res = await fetch("/api/upload", {
         method: "POST",
@@ -72,7 +75,7 @@ export default function StudentUpload() {
   };
 
   const [isExtracting, setIsExtracting] = useState(false);
-  const [extractedAiData, setExtractedAiData] = useState({ score: 0, reasoning: "", fileHash: "" });
+  const [extractedAiData, setExtractedAiData] = useState({ score: 0, reasoning: "", fileHash: "", verificationLink: "" });
 
   const handleExtraction = async (file: File) => {
     setSelectedFile(file);
@@ -101,6 +104,7 @@ export default function StudentUpload() {
         score: data.score || 0,
         reasoning: data.authenticity_reasoning || "No reasoning provided",
         fileHash: data.file_hash || "",
+        verificationLink: data.extracted_verification_link || "",
       });
     } catch (error) {
       console.error("Extraction failed", error);

@@ -85,7 +85,7 @@ export function PublicCertificateViewer({ certificate }: PublicCertificateViewer
                 <div className="relative z-10 w-full max-w-3xl text-center flex flex-col justify-between h-full">
                   
                   {/* Top: Branding & Issuer */}
-                  <div className="flex flex-col items-center gap-2 md:gap-3">
+                  <div className="flex flex-col items-center gap-2 md:gap-3 shrink-0">
                     <div className="w-12 h-12 md:w-16 md:h-16 bg-accent/5 rounded-2xl flex items-center justify-center border border-accent/20 shadow-[0_0_30px_rgba(112,226,164,0.1)]">
                       <Zap className="w-6 h-6 md:w-8 md:h-8 text-accent fill-current drop-shadow-[0_0_15px_rgba(112,226,164,0.8)]" />
                     </div>
@@ -96,15 +96,20 @@ export function PublicCertificateViewer({ certificate }: PublicCertificateViewer
                   </div>
 
                   {/* Middle: Title */}
-                  <div className="space-y-1 my-auto">
-                    <div className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.5em] text-zinc-500">OFFICIAL CREDENTIAL</div>
-                    <h3 className="text-2xl md:text-4xl font-black uppercase tracking-tighter leading-[0.9] text-white line-clamp-2">
+                  <div className="flex-1 flex flex-col justify-center py-4 min-h-0">
+                    <div className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.5em] text-zinc-500 mb-1 md:mb-2 shrink-0">OFFICIAL CREDENTIAL</div>
+                    <h3 className={`font-black uppercase tracking-tighter leading-[1] text-white text-balance ${
+                      certificate.title.length > 60 ? "text-lg md:text-xl lg:text-2xl" :
+                      certificate.title.length > 40 ? "text-xl md:text-2xl lg:text-3xl" :
+                      certificate.title.length > 20 ? "text-2xl md:text-3xl lg:text-4xl" :
+                      "text-3xl md:text-4xl lg:text-[40px]"
+                    }`}>
                       {certificate.title}
                     </h3>
                   </div>
 
                   {/* Bottom: Holder, Date, Status */}
-                  <div className="flex flex-col md:flex-row justify-between items-center md:items-end gap-4 pt-4 border-t border-zinc-800/50 text-left w-full mt-auto">
+                  <div className="flex flex-col md:flex-row justify-between items-center md:items-end gap-4 pt-4 border-t border-zinc-800/50 text-left w-full mt-auto shrink-0">
                     <div className="text-center md:text-left">
                       <div className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 mb-0.5">HOLDER</div>
                       <div className="text-base md:text-xl font-black uppercase tracking-tight text-zinc-200 truncate">

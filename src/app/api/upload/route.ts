@@ -27,6 +27,7 @@ export async function POST(req: Request) {
     const score = parseInt(formData.get("score") as string) || 0;
     const authenticity_reasoning = formData.get("authenticity_reasoning") as string || "No reasoning provided.";
     const file_hash = formData.get("file_hash") as string || null;
+    const verification_link = formData.get("verification_link") as string || null;
 
     if (!file) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
@@ -51,7 +52,8 @@ export async function POST(req: Request) {
         extracted_text: { 
           raw_filename: file.name, 
           authenticity_reasoning: authenticity_reasoning,
-          file_hash: file_hash
+          file_hash: file_hash,
+          verification_link: verification_link
         }
       })
       .select()

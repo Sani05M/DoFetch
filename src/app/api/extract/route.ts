@@ -43,6 +43,14 @@ export async function POST(req: Request) {
     // 3. AI Extraction (Gemini Vision)
     const extractedData = await extractCertificateData(file);
 
+    // 4. Auto-Kill Switch: Fraud Prevention
+    if (extractedData.score < 20) {
+      return NextResponse.json(
+        { error: `Fraud Detection Alert: ${extractedData.authenticity_reasoning}` },
+        { status: 406 }
+      );
+    }
+
     return NextResponse.json({ 
       success: true, 
       data: { ...extractedData, file_hash: fileHash } 

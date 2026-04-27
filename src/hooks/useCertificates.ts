@@ -67,6 +67,23 @@ export function useCertificates() {
 
   useEffect(() => {
     fetchCertificates();
+
+    // Institutional Real-time Sync: Auto-refresh on any database change
+    const channel = supabase
+      .channel('certificates_realtime')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'certificates' },
+        () => {
+          console.log("Real-time update detected, re-fetching artifacts...");
+          fetchCertificates();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [user?.id]);
 
   const addCertificate = async (cert: any) => {

@@ -61,6 +61,18 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
+    // 0.5 File Security: Limit to 10MB and valid types
+    const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+    const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "application/pdf"];
+    
+    if (file.size > MAX_FILE_SIZE) {
+      return NextResponse.json({ error: "File too large. Maximum size is 10MB." }, { status: 400 });
+    }
+    
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      return NextResponse.json({ error: "Invalid file type. Please upload an image or PDF." }, { status: 400 });
+    }
+
     // 1. Generate SHA-256 Hash of the file to prevent duplicates
     const buffer = await file.arrayBuffer();
     const fileHash = crypto.createHash("sha256").update(Buffer.from(buffer)).digest("hex");

@@ -52,9 +52,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function VerifyPage({ params }: Props) {
   const { id } = await params;
 
+  // Security: Only select public-safe fields to prevent leaking internal IDs or AI reasoning
   const { data: cert } = await supabase
     .from("certificates")
-    .select("*, profiles!inner(*)")
+    .select(`
+      id, 
+      title, 
+      issuer, 
+      issue_date, 
+      score, 
+      status, 
+      type, 
+      telegram_file_id, 
+      profiles!inner(full_name)
+    `)
     .eq("id", id)
     .single();
 

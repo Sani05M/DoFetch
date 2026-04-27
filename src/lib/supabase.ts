@@ -11,3 +11,17 @@ export const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
 // Client-side client with anon key — respects RLS policies
 export const supabaseClient = createClient(supabaseUrl, supabaseAnonKey)
+
+/**
+ * Creates a Supabase client with the user's Clerk token.
+ * This allows RLS policies to identify the user via auth.jwt()
+ */
+export const createClerkSupabaseClient = (clerkToken: string) => {
+  return createClient(supabaseUrl, supabaseAnonKey, {
+    global: {
+      headers: {
+        Authorization: `Bearer ${clerkToken}`,
+      },
+    },
+  })
+}

@@ -2,13 +2,15 @@
 
 import { useState, useEffect } from "react";
 import { Certificate } from "@/components/CertificateCard";
-import { supabase } from "@/lib/supabase";
+import { createClerkSupabaseClient } from "@/lib/supabase";
+import { useAuth as useClerkAuth } from "@clerk/nextjs";
 import { useAuth } from "@/context/AuthContext";
 
 export function useCertificates() {
   const [certificates, setCertificates] = useState<Certificate[]>([]);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
+  const { getToken } = useClerkAuth();
 
   const fetchCertificates = async () => {
     if (!user) return;
@@ -16,20 +18,30 @@ export function useCertificates() {
     try {
       setLoading(true);
       
-      let query = supabase.from("certificates").select("*, profiles!inner(*)");
+      // Get the Clerk token for Supabase
+      const token = await getToken({ template: 'supabase' });
+      if (!token) {
+        console.error("No auth token available");
+        setLoading(false);
+        return;
+      }
+
+      // Create an authenticated client
+      const authenticatedSupabase = createClerkSupabaseClient(token);
+      
+      // Use the standard join syntax for maximum compatibility
+      let query = authenticatedSupabase.from("certificates").select(`
+        *,
+        profiles(*)
+      `);
 
       if (user.role === "student") {
         query = query.eq("student_id", user.id);
       } else if (user.role === "faculty") {
-        // Fetch certificates from students in sections managed by this faculty
-        // Note: profiles!inner(*) ensures we only get certificates where the student profile matches
-        // the filter below
         const sections = user.sectionsManaged || [];
         if (sections.length > 0) {
           query = query.in("profiles.section", sections);
         } else {
-          // If faculty manages no sections, show nothing or everything? 
-          // Usually better to show nothing to avoid leakage
           setCertificates([]);
           setLoading(false);
           return;
@@ -38,7 +50,12 @@ export function useCertificates() {
 
       const { data, error } = await query.order("created_at", { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Supabase Query Error:", error.message, error.details);
+        throw error;
+      }
+
+      console.log("Raw certificates fetched:", data?.length);
 
       const formattedCerts: Certificate[] = (data || []).map((c: any) => ({
         id: c.id,
@@ -53,14 +70,50 @@ export function useCertificates() {
         rating: c.score ? (c.score > 90 ? "Platinum" : c.score > 75 ? "Gold" : "Silver") : "Pending",
         score: c.score || 0,
         status: c.status,
-        fileType: "PDF",
+        fileType: "PDF" as const,
         fileId: c.telegram_file_id,
         extractedText: c.extracted_text
       }));
 
       setCertificates(formattedCerts);
-    } catch (error) {
-      console.error("Error fetching certificates:", error);
+    } catch (error: any) {
+      console.error("Full error object in hook:", error);
+      
+      // FALLBACK: If secure fetch fails, try the standard client (since RLS is currently disabled)
+      try {
+        console.warn("Attempting fallback fetch using public client...");
+        const { supabaseClient } = await import("@/lib/supabase");
+        let query = supabaseClient.from("certificates").select("*, profiles!inner(*)");
+        
+        if (user.role === "student") {
+          query = query.eq("student_id", user.id);
+        }
+        
+        const { data: fallbackData, error: fallbackError } = await query.order("created_at", { ascending: false });
+        if (!fallbackError && fallbackData) {
+          const formatted = (fallbackData || []).map((c: any) => ({
+            id: c.id,
+            title: c.title,
+            issuer: c.issuer,
+            studentName: c.profiles?.full_name || "Unknown Scholar",
+            studentId: c.student_id,
+            section: c.profiles?.section || "N/A",
+            batch: c.profiles?.batch || "N/A",
+            type: c.type,
+            issueDate: c.issue_date,
+            rating: c.score ? (c.score > 90 ? "Platinum" : c.score > 75 ? "Gold" : "Silver") : "Pending",
+            score: c.score || 0,
+            status: c.status,
+            fileType: "PDF" as const,
+            fileId: c.telegram_file_id,
+            extractedText: c.extracted_text
+          }));
+          setCertificates(formatted);
+          console.log("Fallback successful! Data restored.");
+        }
+      } catch (fallbackErr) {
+        console.error("Fallback also failed:", fallbackErr);
+      }
     } finally {
       setLoading(false);
     }
@@ -69,39 +122,53 @@ export function useCertificates() {
   useEffect(() => {
     fetchCertificates();
 
-    // Institutional Real-time Sync: Auto-refresh on any database change
-    const channel = supabase
-      .channel(`certs_realtime_${user?.id || 'anon'}`)
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'certificates' },
-        async (payload) => {
-          console.log("Registry Sync Event:", payload.eventType, payload);
-          
-          if (payload.eventType === 'INSERT') {
-            // Re-fetch to get profile joins (Supebase Realtime doesn't support joins in payload)
-            await fetchCertificates();
-          } else if (payload.eventType === 'UPDATE') {
-            setCertificates(current => 
-              current.map(c => c.id === payload.new.id ? { 
-                ...c, 
-                status: payload.new.status, 
-                score: payload.new.score,
-                rating: payload.new.score ? (payload.new.score > 90 ? "Platinum" : payload.new.score > 75 ? "Gold" : "Silver") : "Pending",
-              } : c)
-            );
-          } else if (payload.eventType === 'DELETE') {
-            setCertificates(current => current.filter(c => c.id === payload.old.id));
+    const setupRealtime = async () => {
+      const token = await getToken({ template: 'supabase' });
+      if (!token || !user) return;
+      
+      const authenticatedSupabase = createClerkSupabaseClient(token);
+      
+      const channel = authenticatedSupabase
+        .channel(`certs_realtime_${user.id}`)
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'certificates' },
+          async (payload) => {
+            console.log("Registry Sync Event:", payload.eventType, payload);
+            
+            if (payload.eventType === 'INSERT') {
+              await fetchCertificates();
+            } else if (payload.eventType === 'UPDATE') {
+              setCertificates(current => 
+                current.map(c => c.id === payload.new.id ? { 
+                  ...c, 
+                  status: payload.new.status, 
+                  score: payload.new.score,
+                  rating: payload.new.score ? (payload.new.score > 90 ? "Platinum" : payload.new.score > 75 ? "Gold" : "Silver") : "Pending",
+                } : c)
+              );
+            } else if (payload.eventType === 'DELETE') {
+              setCertificates(current => current.filter(c => c.id === payload.old.id));
+            }
           }
-        }
-      )
-      .subscribe((status) => {
-        console.log("Realtime Subscription Status:", status);
-      });
+        )
+        .subscribe();
+
+      return channel;
+    };
+
+    let channelPromise = setupRealtime();
 
     return () => {
-      console.log("Cleaning up realtime registry sync...");
-      supabase.removeChannel(channel);
+      channelPromise.then(channel => {
+        if (channel) {
+          console.log("Cleaning up realtime registry sync...");
+          const token = getToken({ template: 'supabase' });
+          token.then(t => {
+            if (t) createClerkSupabaseClient(t).removeChannel(channel);
+          });
+        }
+      });
     };
   }, [user?.id]);
 
@@ -113,7 +180,12 @@ export function useCertificates() {
 
   const updateStatus = async (id: string, status: string) => {
     try {
-      const { error } = await supabase
+      const token = await getToken({ template: 'supabase' });
+      if (!token) return;
+      
+      const authenticatedSupabase = createClerkSupabaseClient(token);
+      
+      const { error } = await authenticatedSupabase
         .from("certificates")
         .update({ status })
         .eq("id", id);

@@ -11,6 +11,7 @@ import { AnimatePresence, motion } from "framer-motion";
 
 import { AnimatedSection, containerVariants, itemVariants } from "@/components/AnimatedSection";
 import { useAuth } from "@/context/AuthContext";
+import { RegistryGraph } from "@/components/RegistryGraph";
 
 const LEADERBOARD = [
   { id: "22CS001", name: "Abhishek Singh", section: "A", certCount: 8, weightage: 950 },
@@ -122,7 +123,7 @@ export default function FacultyDashboard() {
         {/* Charts Section */}
         <div className="lg:col-span-2 flex flex-col gap-6">
           <AnimatedSection delay={0.2}>
-            <div className="bento-card border-4 border-text-primary shadow-[8px_8px_0_#000] p-6 md:p-8 flex-1">
+            <div className="bento-card border-4 border-text-primary p-6 md:p-8 flex-1">
               <h3 className="text-lg md:text-xl font-black uppercase tracking-widest mb-6 text-text-primary">Ingestion Velocity</h3>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
@@ -133,7 +134,11 @@ export default function FacultyDashboard() {
                       cursor={{ fill: '#f4f4f5' }}
                       contentStyle={{ borderRadius: '12px', border: '3px solid #09090b', fontWeight: 'bold' }}
                     />
-                    <Bar dataKey="certs" fill="#ffc107" radius={[4, 4, 0, 0]} />
+                    <Bar 
+                      dataKey="certs" 
+                      fill="var(--color-accent)" 
+                      radius={[4, 4, 0, 0]}
+                    />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -141,7 +146,7 @@ export default function FacultyDashboard() {
           </AnimatedSection>
           
           <AnimatedSection delay={0.3}>
-            <div className="bento-card border-4 border-text-primary shadow-[8px_8px_0_#000] p-6 md:p-8 flex flex-col md:flex-row items-center gap-8">
+            <div className="bento-card border-4 border-text-primary p-6 md:p-8 flex flex-col md:flex-row items-center gap-8">
               <div className="flex-1 w-full text-center md:text-left">
                 <h3 className="text-lg md:text-xl font-black uppercase tracking-widest mb-2 text-text-primary">Audit Distribution</h3>
                 <p className="text-[10px] md:text-sm font-bold text-text-secondary mb-6 uppercase tracking-widest">Global Registry Status</p>
@@ -182,7 +187,7 @@ export default function FacultyDashboard() {
 
         {/* Leaderboard Section */}
         <AnimatedSection delay={0.4}>
-          <div className="bento-card border-4 border-text-primary shadow-[8px_8px_0_#000] p-0 overflow-hidden flex flex-col h-full">
+          <div className="bento-card border-4 border-text-primary p-0 overflow-hidden flex flex-col h-full">
             <div className="p-6 md:p-8 border-b-3 border-text-primary bg-bg-surface">
               <h3 className="text-lg md:text-xl font-black uppercase tracking-widest flex items-center gap-3 text-text-primary">
                 <Award className="w-5 h-5 md:w-6 md:h-6 text-accent" />
@@ -195,7 +200,7 @@ export default function FacultyDashboard() {
                 <div 
                   key={student.id} 
                   onClick={() => setSelectedStudent(student)}
-                  className="p-4 md:p-6 hover:bg-bg-base transition-colors cursor-pointer group flex items-center justify-between"
+                  className="p-4 md:p-6 hover:bg-bg-base transition-colors group flex items-center justify-between"
                 >
                   <div className="flex items-center gap-3 md:gap-4">
                     <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-bg-surface border-2 border-border flex items-center justify-center font-black text-[10px] md:text-xs text-text-secondary">
@@ -217,6 +222,23 @@ export default function FacultyDashboard() {
         </AnimatedSection>
       </div>
 
+      {/* Registry Graph Section */}
+      <AnimatedSection delay={0.45}>
+        <div className="mb-12">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tighter">Academic Mesh</h2>
+              <p className="text-[10px] md:text-xs font-bold text-text-secondary uppercase tracking-widest">Interactive Relationship Mapping</p>
+            </div>
+            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-bg-surface border-2 border-bg-dark rounded-lg text-[10px] font-black uppercase">
+              <span className="w-2 h-2 rounded-full bg-accent" />
+              Live Linkages
+            </div>
+          </div>
+          <RegistryGraph />
+        </div>
+      </AnimatedSection>
+
       {/* Quick Links / Clusters */}
       <AnimatedSection delay={0.5}>
         <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter mb-8">REGISTRY SECTIONS</h2>
@@ -234,7 +256,7 @@ export default function FacultyDashboard() {
             { label: "Section D", count: 61, icon: "D" }
           ].map((cluster, i) => (
             <motion.div key={i} variants={itemVariants}>
-              <div className="bento-card p-6 flex flex-col items-center text-center border-4 border-bg-dark shadow-[6px_6px_0_#000] relative overflow-hidden h-full bg-bg-surface">
+              <div className="bento-card p-6 flex flex-col items-center text-center border-4 border-bg-dark relative overflow-hidden h-full bg-bg-surface">
                 <button 
                   onClick={(e) => handleDownloadSection(cluster.label, e)}
                   className="absolute top-4 right-4 w-9 h-9 md:w-10 md:h-10 bg-bg-surface border-2 border-border rounded-lg md:rounded-xl flex items-center justify-center text-text-secondary hover:text-text-primary hover:border-text-primary hover:shadow-[2px_2px_0_var(--color-text-primary)] transition-all z-10 cursor-pointer"

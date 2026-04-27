@@ -30,7 +30,7 @@
     --color-accent: #6366f1; /* Indigo-500 */
     --color-accent-hover: #4f46e5;
   }
-  
+
   html {
     scroll-behavior: smooth;
   }

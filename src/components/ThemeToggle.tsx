@@ -1,13 +1,14 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Moon, Sun } from "lucide-react";
+import { Moon, Sun, Zap } from "lucide-react";
+
+type Theme = "light" | "dark" | "neon";
 
 export function ThemeToggle() {
   const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
-    // Check initial preference
     if (
       localStorage.theme === "dark" ||
       (!("theme" in localStorage) &&

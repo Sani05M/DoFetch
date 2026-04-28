@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { DashboardLayout } from "@/components/DashboardLayout";
@@ -8,12 +8,10 @@ import { useCertificates } from "@/hooks/useCertificates";
 import { CertificateCard, Certificate } from "@/components/CertificateCard";
 import { CertificatePreview } from "@/components/CertificatePreview";
 import { AnimatedSection, containerVariants, itemVariants } from "@/components/AnimatedSection";
-import { LayoutGrid, CheckCircle2, Clock, Plus, Zap, ArrowUpRight, RefreshCcw, Activity, Flame, User as UserIcon } from "lucide-react";
+import { LayoutGrid, CheckCircle2, Clock, Plus, Zap, ArrowUpRight, Activity, Flame, User as UserIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useProfile } from "@/hooks/useProfile";
-
-
-
+import { useGsapHeroReveal, useGsapCardStagger } from "@/hooks/useGsapAnimations";
 import { useAuth } from "@/context/AuthContext";
 
 export default function StudentDashboard() {
@@ -23,6 +21,12 @@ export default function StudentDashboard() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [quota, setQuota] = useState({ used: 0, limit: 10 });
   const [loadingQuota, setLoadingQuota] = useState(true);
+
+  // GSAP hooks
+  const heroRef = useGsapHeroReveal();
+  // Empty deps — run once on mount; data refreshes happen silently without flashing cards
+  const statCardContainerRef = useGsapCardStagger([], { stagger: 0.07, delay: 0.15, y: 24 });
+  const certCardContainerRef = useGsapCardStagger([], { stagger: 0.06, delay: 0.05, y: 18 });
 
   const fetchQuota = async () => {
     try {
@@ -46,8 +50,7 @@ export default function StudentDashboard() {
 
   React.useEffect(() => {
     fetchQuota();
-    const interval = setInterval(handleRefresh, 5000);
-    return () => clearInterval(interval);
+    // useCertificates handles 5s polling internally
   }, []);
 
   const verifiedCount = certificates.filter(c => c.status === "verified" || c.status === "approved").length;
@@ -69,28 +72,29 @@ export default function StudentDashboard() {
   ];
 
   return (
-    <DashboardLayout allowedRole="student">
-      {/* Hero Header */}
-      <AnimatedSection>
+    <DashboardLayout allowedRole="student" onRefresh={handleRefresh} isRefreshing={isRefreshing}>
+      {/* Hero Header — GSAP revealed */}
+      <div ref={heroRef}>
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 md:mb-16 gap-6 md:gap-8">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-bg-surface rounded-full text-[10px] md:text-xs font-black uppercase tracking-widest mb-4 border border-border shadow-[4px_4px_0_#000]">
+            <div className="gsap-hero-badge inline-flex items-center gap-2 px-3 py-1 bg-bg-surface rounded-full text-[10px] md:text-xs font-black uppercase tracking-widest mb-4 border border-border shadow-[4px_4px_0_#000]">
               <Zap className="w-3 h-3 text-accent fill-current" />
               <span>Institutional Mesh Active</span>
             </div>
-            <h1 className="text-3xl xs:text-4xl md:text-5xl font-black uppercase tracking-tighter leading-tight text-text-primary">
+            <h1 className="gsap-hero-title text-3xl xs:text-4xl md:text-5xl font-black uppercase tracking-tighter leading-tight text-text-primary">
               WELCOME BACK,<br/>
               <span className="text-accent">{user?.name || "STUDENT"}</span>
             </h1>
           </div>
-          <div className="flex items-center gap-3">
-            <motion.div 
+          <div className="gsap-hero-actions flex items-center gap-3">
+            {/* Live Portfolio */}
+            <motion.div
               whileHover={{ scale: 1.02 }}
               whileTap={{ x: 3, y: 3 }}
               className="hidden md:block"
             >
-              <Link 
-                href={profile?.portfolio_slug ? `/portfolio/${profile.portfolio_slug}` : '/student/profile'} 
+              <Link
+                href={profile?.portfolio_slug ? `/portfolio/${profile.portfolio_slug}` : '/student/profile'}
                 className={cn(
                   "flex items-center gap-2 px-6 py-3 md:py-4 bg-zinc-900 border-3 border-bg-dark rounded-2xl font-black uppercase tracking-widest text-[10px] md:text-xs text-white hover:shadow-[4px_4px_0_#000] transition-all",
                   !profile?.portfolio_slug && "opacity-80"
@@ -100,19 +104,8 @@ export default function StudentDashboard() {
                 {profile?.portfolio_slug ? "Live Portfolio" : "Setup Slug"}
               </Link>
             </motion.div>
-            <button
-              onClick={handleRefresh}
-              title="Live Sync (every 5s)"
-              className="w-11 h-11 bg-bg-surface border-3 border-bg-dark rounded-2xl flex items-center justify-center text-text-primary hover:bg-accent hover:shadow-[4px_4px_0_#000] transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
-            >
-              <motion.div
-                animate={isRefreshing ? { rotate: 360 } : { rotate: 0 }}
-                transition={isRefreshing ? { duration: 1, repeat: Infinity, ease: "linear" } : { duration: 0.4 }}
-              >
-                <RefreshCcw className="w-5 h-5" />
-              </motion.div>
-            </button>
-            <motion.div 
+            {/* Sync Credential — rightmost */}
+            <motion.div
               whileHover={{ scale: 1.02 }}
               whileTap={{ x: 3, y: 3 }}
               className="w-full md:w-auto"
@@ -124,56 +117,58 @@ export default function StudentDashboard() {
             </motion.div>
           </div>
         </div>
-      </AnimatedSection>
+      </div>
 
-      {/* Grid Stats */}
-      <motion.div 
-        variants={containerVariants}
-        initial="hidden"
-        animate="show"
+      {/* Grid Stats — GSAP stagger */}
+      <div
+        ref={statCardContainerRef}
         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-16 md:mb-20"
       >
-        {/* Daily Quota Card */}
-        <motion.div variants={itemVariants} whileHover={{ x: -1, y: -1 }} whileTap={{ x: 3, y: 3 }}>
-          <div className={cn(
-            "bento-3d flex flex-col justify-between h-40 md:h-48 transition-all active:shadow-none p-6 md:p-8 rounded-2xl md:rounded-3xl bg-bg-surface border-border shadow-[4px_4px_0_#000]"
-          )}>
-            <div className="flex items-center justify-between">
-              <div className="w-10 h-10 md:w-12 md:h-12 bg-orange-500/10 rounded-xl flex items-center justify-center text-orange-500 shadow-sm border-2 border-orange-500/20">
-                <Flame className="w-5 h-5 md:w-6 md:h-6 fill-current" />
+        {/* Daily Streak Card */}
+        <div className="gsap-card">
+          <motion.div whileHover={{ y: -3, scale: 1.01 }} whileTap={{ scale: 0.98 }} transition={{ type: "spring", stiffness: 400, damping: 20 }}>
+            <div className={cn(
+              "bento-3d flex flex-col justify-between h-40 md:h-48 transition-all p-6 md:p-8 rounded-2xl md:rounded-3xl bg-bg-surface border-border shadow-[4px_4px_0_#000]"
+            )}>
+              <div className="flex items-center justify-between">
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-orange-500/10 rounded-xl flex items-center justify-center text-orange-500 shadow-sm border-2 border-orange-500/20">
+                  <Flame className="w-5 h-5 md:w-6 md:h-6 fill-current" />
+                </div>
+                <Activity className="w-5 h-5 md:w-6 md:h-6 opacity-30" />
               </div>
-              <Activity className="w-5 h-5 md:w-6 md:h-6 opacity-30" />
+              <div>
+                <span className="text-4xl md:text-6xl font-black tracking-tighter leading-none">
+                  {(profile?.streak_data as any)?.current || 0}
+                </span>
+                <p className="text-[10px] md:text-sm font-black uppercase tracking-widest mt-1 md:mt-2 opacity-80">Day Streak</p>
+              </div>
             </div>
-            <div>
-              <span className="text-4xl md:text-6xl font-black tracking-tighter leading-none">
-                {(profile?.streak_data as any)?.current || 0}
-              </span>
-              <p className="text-[10px] md:text-sm font-black uppercase tracking-widest mt-1 md:mt-2 opacity-80">Day Streak</p>
-            </div>
-          </div>
-        </motion.div>
+          </motion.div>
+        </div>
 
         {/* Quota Stats Card */}
-        <motion.div variants={itemVariants} whileHover={{ x: -1, y: -1 }} whileTap={{ x: 3, y: 3 }}>
-          <Link href="/student/upload" className={cn(
-            "bento-3d flex flex-col justify-between h-40 md:h-48 transition-all active:shadow-none p-6 md:p-8 rounded-2xl md:rounded-3xl",
-            loadingQuota || quota.used < quota.limit ? "bg-bg-surface border-border shadow-[4px_4px_0_#000]" : "bg-red-500 border-bg-dark shadow-[4px_4px_0_#000] text-white"
-          )}>
-            <div className="flex items-center justify-between">
-              <div className="w-10 h-10 md:w-12 md:h-12 bg-bg-surface rounded-xl flex items-center justify-center text-text-primary shadow-sm border-2 border-border">
-                <Plus className="w-5 h-5 md:w-6 md:h-6" />
+        <div className="gsap-card">
+          <motion.div whileHover={{ y: -3, scale: 1.01 }} whileTap={{ scale: 0.98 }} transition={{ type: "spring", stiffness: 400, damping: 20 }}>
+            <Link href="/student/upload" className={cn(
+              "bento-3d flex flex-col justify-between h-40 md:h-48 transition-all p-6 md:p-8 rounded-2xl md:rounded-3xl block",
+              loadingQuota || quota.used < quota.limit ? "bg-bg-surface border-border shadow-[4px_4px_0_#000]" : "bg-red-500 border-bg-dark shadow-[4px_4px_0_#000] text-white"
+            )}>
+              <div className="flex items-center justify-between">
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-bg-surface rounded-xl flex items-center justify-center text-text-primary shadow-sm border-2 border-border">
+                  <Plus className="w-5 h-5 md:w-6 md:h-6" />
+                </div>
+                <ArrowUpRight className="w-5 h-5 md:w-6 md:h-6 opacity-30 group-hover:opacity-100 transition-opacity" />
               </div>
-              <ArrowUpRight className="w-5 h-5 md:w-6 md:h-6 opacity-30 group-hover:opacity-100 transition-opacity" />
-            </div>
-            <div>
-              <span className="text-4xl md:text-6xl font-black tracking-tighter leading-none">
-                {loadingQuota ? "-" : quota.used}
-              </span>
-              <span className="text-xl md:text-2xl font-black opacity-30">/{loadingQuota ? "-" : quota.limit}</span>
-              <p className="text-[10px] md:text-sm font-black uppercase tracking-widest mt-1 md:mt-2 opacity-80">Daily Quota</p>
-            </div>
-          </Link>
-        </motion.div>
+              <div>
+                <span className="text-4xl md:text-6xl font-black tracking-tighter leading-none">
+                  {loadingQuota ? "-" : quota.used}
+                </span>
+                <span className="text-xl md:text-2xl font-black opacity-30">/{loadingQuota ? "-" : quota.limit}</span>
+                <p className="text-[10px] md:text-sm font-black uppercase tracking-widest mt-1 md:mt-2 opacity-80">Daily Quota</p>
+              </div>
+            </Link>
+          </motion.div>
+        </div>
 
         {stats.map((stat, i) => {
           const href = stat.label === "Total Artifacts" 
@@ -183,31 +178,28 @@ export default function StudentDashboard() {
               : "/student/certificates?filter=pending";
               
           return (
-            <motion.div 
-              key={i} 
-              variants={itemVariants}
-              whileHover={{ x: -1, y: -1 }}
-              whileTap={{ x: 3, y: 3 }}
-            >
-              <Link href={href} className={cn(
-                "bento-3d flex flex-col justify-between h-40 md:h-48 transition-all active:shadow-none p-6 md:p-8 rounded-2xl md:rounded-3xl",
-                stat.color
-              )}>
-                <div className="flex items-center justify-between">
-                  <div className="w-10 h-10 md:w-12 md:h-12 bg-bg-surface rounded-xl flex items-center justify-center text-text-primary shadow-sm border-2 border-border">
-                    {React.cloneElement(stat.icon as React.ReactElement<{ className?: string }>, { className: "w-5 h-5 md:w-6 md:h-6" })}
+            <div key={i} className="gsap-card">
+              <motion.div whileHover={{ y: -3, scale: 1.01 }} whileTap={{ scale: 0.98 }} transition={{ type: "spring", stiffness: 400, damping: 20 }}>
+                <Link href={href} className={cn(
+                  "bento-3d flex flex-col justify-between h-40 md:h-48 transition-all p-6 md:p-8 rounded-2xl md:rounded-3xl block",
+                  stat.color
+                )}>
+                  <div className="flex items-center justify-between">
+                    <div className="w-10 h-10 md:w-12 md:h-12 bg-bg-surface rounded-xl flex items-center justify-center text-text-primary shadow-sm border-2 border-border">
+                      {React.cloneElement(stat.icon as React.ReactElement<{ className?: string }>, { className: "w-5 h-5 md:w-6 md:h-6" })}
+                    </div>
+                    <ArrowUpRight className="w-5 h-5 md:w-6 md:h-6 opacity-30 group-hover:opacity-100 transition-opacity" />
                   </div>
-                  <ArrowUpRight className="w-5 h-5 md:w-6 md:h-6 opacity-30 group-hover:opacity-100 transition-opacity" />
-                </div>
-                <div>
-                  <span className="text-4xl md:text-6xl font-black tracking-tighter leading-none">{stat.count}</span>
-                  <p className="text-[10px] md:text-sm font-black uppercase tracking-widest mt-1 md:mt-2 opacity-80">{stat.label}</p>
-                </div>
-              </Link>
-            </motion.div>
+                  <div>
+                    <span className="text-4xl md:text-6xl font-black tracking-tighter leading-none">{stat.count}</span>
+                    <p className="text-[10px] md:text-sm font-black uppercase tracking-widest mt-1 md:mt-2 opacity-80">{stat.label}</p>
+                  </div>
+                </Link>
+              </motion.div>
+            </div>
           );
         })}
-      </motion.div>
+      </div>
 
       {/* Badges Showcase */}
       {profile?.badges && profile.badges.length > 0 && (
@@ -235,7 +227,7 @@ export default function StudentDashboard() {
         </AnimatedSection>
       )}
 
-      {/* Recent Activity */}
+      {/* Recent Activity — GSAP stagger on cert cards */}
       <AnimatedSection delay={0.4}>
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
           <h2 className="text-2xl md:text-4xl font-black uppercase tracking-tighter text-text-primary">RECENTLY SYNCED</h2>
@@ -244,21 +236,19 @@ export default function StudentDashboard() {
           </Link>
         </div>
 
-        <motion.div 
-          variants={containerVariants}
-          initial="hidden"
-          animate="show"
+        <div
+          ref={certCardContainerRef}
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8"
         >
           {certificates.slice(0, 6).map((cert) => (
-            <motion.div key={cert.id} variants={itemVariants}>
+            <div key={cert.id} className="gsap-card">
               <CertificateCard 
                 certificate={cert} 
                 onClick={() => handlePreview(cert)}
               />
-            </motion.div>
+            </div>
           ))}
-        </motion.div>
+        </div>
       </AnimatedSection>
 
       <CertificatePreview 

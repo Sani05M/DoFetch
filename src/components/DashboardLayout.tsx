@@ -4,18 +4,19 @@ import React, { useEffect } from "react";
 import { useAuth, Role } from "@/context/AuthContext";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
-import { Zap, LogOut, LayoutGrid, Plus, ShieldCheck, UserCircle, Layers } from "lucide-react";
+import { Zap, LayoutGrid, Plus, ShieldCheck, Layers, RefreshCcw } from "lucide-react";
 import { motion } from "framer-motion";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import { UserButton, useUser } from "@clerk/nextjs";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
   allowedRole: Role;
+  onRefresh?: () => void;
+  isRefreshing?: boolean;
 }
 
-export function DashboardLayout({ children, allowedRole }: DashboardLayoutProps) {
-  const { user, logout, isLoading } = useAuth();
+export function DashboardLayout({ children, allowedRole, onRefresh, isRefreshing }: DashboardLayoutProps) {
+  const { user, isLoading } = useAuth();
   const { user: clerkUser, isLoaded: clerkLoaded } = useUser();
   const router = useRouter();
   const pathname = usePathname();
@@ -40,10 +41,6 @@ export function DashboardLayout({ children, allowedRole }: DashboardLayoutProps)
     );
   }
 
-  const handleLogout = () => {
-    logout();
-    router.push("/");
-  };
 
   const studentLinks = [
     { href: "/student/dashboard", label: "Dashboard", icon: <LayoutGrid className="w-3.5 h-3.5" /> },
@@ -94,14 +91,37 @@ export function DashboardLayout({ children, allowedRole }: DashboardLayoutProps)
           </div>
 
           <div className="flex items-center gap-2">
-            <ThemeToggle />
-            <div className="hidden xs:flex items-center gap-2 px-3 py-1.5 bg-bg-surface rounded-full text-[8px] font-black uppercase tracking-[0.2em] border-2 border-border shadow-[2px_2px_0_var(--color-border)]">
-              <span className="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)] animate-pulse" />
-              <span className="text-text-secondary truncate max-w-[70px] md:max-w-none">{user.role === "faculty" ? "Authority" : "Student"}</span>
+            {/* Sync button */}
+            {onRefresh && (
+              <motion.button
+                onClick={onRefresh}
+                title="Sync data"
+                whileTap={{ x: 2, y: 2 }}
+                whileHover={{ scale: 1.03 }}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-bg-surface border-2 border-bg-dark rounded-xl text-[9px] font-black uppercase tracking-widest text-text-primary shadow-[2px_2px_0_#000] hover:shadow-[3px_3px_0_#000] transition-all"
+              >
+                <motion.div
+                  animate={isRefreshing ? { rotate: 360 } : { rotate: 0 }}
+                  transition={isRefreshing ? { duration: 0.7, repeat: Infinity, ease: "linear" } : { duration: 0.35, ease: "backOut" }}
+                >
+                  <RefreshCcw className="w-3 h-3" />
+                </motion.div>
+                <span className="hidden sm:inline">Sync</span>
+              </motion.button>
+            )}
+
+            {/* Role tag — highlighted accent for student, red for faculty */}
+            <div className={`hidden xs:flex items-center px-3 py-1.5 rounded-xl border-2 border-bg-dark text-[9px] font-black uppercase tracking-widest shadow-[2px_2px_0_#000] ${
+              user.role === "faculty"
+                ? "bg-[#ef4444] text-white"
+                : "bg-accent text-bg-dark"
+            }`}>
+              {user.role === "faculty" ? "Authority" : "Student"}
             </div>
-            
-            <div className="p-1 rounded-xl bg-bg-surface border-2 border-border flex items-center justify-center hover:border-text-primary hover:shadow-[3px_3px_0_var(--color-text-primary)] transition-all">
-              <UserButton 
+
+            {/* Clerk avatar — has sign out built in */}
+            <div className="p-1 rounded-xl bg-bg-surface border-2 border-border flex items-center justify-center hover:border-bg-dark hover:shadow-[2px_2px_0_#000] transition-all">
+              <UserButton
                 appearance={{
                   elements: {
                     userButtonAvatarBox: "w-7 h-7 rounded-lg",
@@ -109,14 +129,6 @@ export function DashboardLayout({ children, allowedRole }: DashboardLayoutProps)
                 }}
               />
             </div>
-            <motion.button 
-              whileTap={{ x: 2, y: 2 }}
-              onClick={handleLogout} 
-              className="bg-[#ef4444] text-white px-3 py-2 rounded-lg text-[8px] md:text-[10px] font-black uppercase tracking-widest hover:bg-red-600 transition-all flex items-center gap-1.5 border-2 border-bg-dark shadow-[3px_3px_0_#000] active:shadow-none"
-            >
-              <LogOut className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Logout</span>
-            </motion.button>
           </div>
         </div>
       </nav>

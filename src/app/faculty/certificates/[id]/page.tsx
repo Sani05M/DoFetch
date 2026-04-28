@@ -91,16 +91,21 @@ export default function AuditDetailPage({ params }: { params: Promise<{ id: stri
   const handleAudit = async (status: "approved" | "rejected") => {
     setIsProcessing(true);
     try {
-      const { error } = await supabase
-        .from("certificates")
-        .update({ status, score: overrideScore })
-        .eq("id", certId);
+      const res = await fetch("/api/audit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: certId, status, score: overrideScore }),
+      });
 
-      if (error) throw error;
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Failed to update status");
+      }
+
       router.push("/faculty/certificates");
-    } catch (err) {
+    } catch (err: any) {
       console.error("Audit update failed:", err);
-      alert("Failed to update status.");
+      alert(err.message || "Failed to update status.");
       setIsProcessing(false);
     }
   };

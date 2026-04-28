@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { useGsapModal } from "@/hooks/useGsapAnimations";
 import { 
   X, 
   Download, 
@@ -20,6 +21,7 @@ import {
   Share2
 } from "lucide-react";
 import { Certificate } from "./CertificateCard";
+import { div } from "framer-motion/client";
 
 interface CertificatePreviewProps {
   certificate: Certificate | null;
@@ -73,6 +75,14 @@ export function CertificatePreview({ certificate, isOpen, onClose, onDelete }: C
   const [isMobile, setIsMobile] = useState(false);
   const [isFlipped, setIsFlipped] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
+
+  // Visibility state — keeps modal mounted during exit animation
+  const [isVisible, setIsVisible] = useState(false);
+  const { backdropRef, panelRef } = useGsapModal(isOpen, () => setIsVisible(false));
+
+  useEffect(() => {
+    if (isOpen) setIsVisible(true);
+  }, [isOpen]);
 
   const [verificationReason, setVerificationReason] = useState<string | null>(null);
 
@@ -194,26 +204,25 @@ export function CertificatePreview({ certificate, isOpen, onClose, onDelete }: C
   useEffect(() => setMounted(true), []);
 
   if (!certificate || !mounted) return null;
+  if (!isVisible && !isOpen) return null;
 
   return createPortal(
-    <AnimatePresence>
-      {isOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="absolute inset-0 bg-bg-dark/80 backdrop-blur-md"
-            onClick={onClose}
-          />
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4" style={{ display: isVisible || isOpen ? 'flex' : 'none' }}>
+      {/* GSAP-animated backdrop */}
+      <div
+        ref={backdropRef}
+        style={{ opacity: 0 }}
+        className="absolute inset-0 bg-bg-dark/80 backdrop-blur-md"
+        onClick={onClose}
+      />
 
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="w-full max-w-7xl bg-bg-surface border-4 border-bg-dark shadow-2xl relative z-10 flex flex-col overflow-hidden rounded-[2.5rem] h-[90vh]"
-            onClick={(e) => e.stopPropagation()}
-          >
+      {/* GSAP-animated panel */}
+      <div
+        ref={panelRef}
+        style={{ opacity: 0 }}
+        className="w-full max-w-7xl bg-bg-surface ring-4 ring-inset ring-bg-dark shadow-2xl relative z-10 flex flex-col overflow-hidden rounded-[2.5rem] h-[90vh]"
+        onClick={(e) => e.stopPropagation()}
+      >
             {/* AI FRAUD ALERT BADGE */}
             {certificate.score > 0 && certificate.score < 25 && certificate.status === "pending" && (
               <div className="bg-red-600 border-b-4 border-bg-dark text-white p-3 flex items-center justify-center gap-3 z-[60] animate-pulse">
@@ -544,10 +553,8 @@ export function CertificatePreview({ certificate, isOpen, onClose, onDelete }: C
                 </motion.div>
               )}
             </AnimatePresence>
-          </motion.div>
         </div>
-      )}
-    </AnimatePresence>,
+      </div>,
     document.body
   );
 }

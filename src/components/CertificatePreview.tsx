@@ -211,7 +211,7 @@ export function CertificatePreview({ certificate, isOpen, onClose, onDelete }: C
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="w-full max-w-7xl bg-bg-surface border-4 border-bg-dark shadow-[24px_24px_0_#000] relative z-10 flex flex-col overflow-hidden rounded-[2.5rem] h-[90vh]"
+            className="w-full max-w-7xl bg-bg-surface border-4 border-bg-dark shadow-2xl relative z-10 flex flex-col overflow-hidden rounded-[2.5rem] h-[90vh]"
             onClick={(e) => e.stopPropagation()}
           >
             {/* AI FRAUD ALERT BADGE */}
@@ -238,7 +238,7 @@ export function CertificatePreview({ certificate, isOpen, onClose, onDelete }: C
                   whileHover={{ scale: 1.1, rotate: 90 }}
                   whileTap={{ scale: 0.9 }}
                   onClick={onClose}
-                  className="p-2.5 bg-bg-surface border-2 border-bg-dark rounded-xl shadow-[4px_4px_0_#000] hover:bg-accent transition-colors active:shadow-none active:translate-x-[2px] active:translate-y-[2px]"
+                  className="p-2.5 bg-bg-surface border-2 border-bg-dark rounded-xl shadow-md hover:bg-accent transition-colors active:scale-95"
                 >
                   <X className="w-6 h-6" />
                 </motion.button>
@@ -278,7 +278,7 @@ export function CertificatePreview({ certificate, isOpen, onClose, onDelete }: C
                         rotateY: isMobile ? 0 : rotateY, 
                         transformStyle: "preserve-3d" 
                       }}
-                      className="w-full max-w-[480px] aspect-[1.586/1] bg-gradient-to-br from-zinc-900 via-bg-dark to-zinc-950 rounded-[1.5rem] lg:rounded-[2rem] p-6 lg:p-12 border-4 border-zinc-800 flex flex-col justify-between relative overflow-hidden shadow-[20px_20px_0_#000] lg:shadow-[32px_32px_0_#000]"
+                      className="w-full max-w-[480px] aspect-[1.586/1] bg-gradient-to-br from-zinc-900 via-bg-dark to-zinc-950 rounded-[1.5rem] lg:rounded-[2rem] p-6 lg:p-12 border-4 border-zinc-800 flex flex-col justify-between relative overflow-hidden shadow-2xl"
                     >
                       {/* Glass Shine */}
                       <div className="absolute inset-0 bg-gradient-to-tr from-white/5 via-transparent to-white/5 pointer-events-none" />
@@ -373,7 +373,7 @@ export function CertificatePreview({ certificate, isOpen, onClose, onDelete }: C
               {/* RIGHT: METADATA & ACTIONS */}
               <div className="w-full lg:flex-[0.8] bg-white p-4 sm:p-6 lg:p-12 flex flex-col justify-between">
                 <div className="space-y-6 lg:space-y-12">
-                   <div className="flex items-center gap-4 p-3 sm:p-4 bg-bg-base border-2 border-bg-dark rounded-xl sm:rounded-2xl shadow-[4px_4px_0_#000]">
+                   <div className="flex items-center gap-4 p-3 sm:p-4 bg-bg-base border-2 border-bg-dark rounded-xl sm:rounded-2xl shadow-sm">
                     <div className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-bg-dark rounded-xl flex items-center justify-center text-accent">
                       <Zap className="w-5 h-5 lg:w-6 lg:h-6 fill-current" />
                     </div>
@@ -442,7 +442,7 @@ export function CertificatePreview({ certificate, isOpen, onClose, onDelete }: C
                   <div className="grid grid-cols-2 gap-3 lg:gap-4 w-full">
                     <button
                       onClick={() => setIsFlipped(!isFlipped)}
-                      className="py-3 lg:py-4 bg-zinc-900 border-2 border-bg-dark rounded-xl lg:rounded-2xl shadow-[4px_4px_0_#000] hover:bg-zinc-800 hover:shadow-[2px_2px_0_#000] hover:translate-x-[2px] hover:translate-y-[2px] transition-all active:shadow-none active:translate-x-[4px] active:translate-y-[4px] flex items-center justify-center gap-2 group"
+                      className="py-3 lg:py-4 bg-zinc-900 border-2 border-bg-dark rounded-xl lg:rounded-2xl shadow-md hover:bg-zinc-800 hover:shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2 group"
                     >
                       <RefreshCw className="w-4 h-4 lg:w-5 lg:h-5 text-accent group-hover:rotate-180 transition-transform duration-500" />
                       <span className="text-[10px] font-black uppercase tracking-widest text-white">FLIP CARD</span>
@@ -454,7 +454,7 @@ export function CertificatePreview({ certificate, isOpen, onClose, onDelete }: C
                         setIsCopied(true);
                         setTimeout(() => setIsCopied(false), 2000);
                       }}
-                      className={`py-3 lg:py-4 border-2 rounded-xl lg:rounded-2xl shadow-[4px_4px_0_#000] hover:shadow-[2px_2px_0_#000] hover:translate-x-[2px] hover:translate-y-[2px] transition-all active:shadow-none active:translate-x-[4px] active:translate-y-[4px] flex items-center justify-center gap-2 group ${
+                      className={`py-3 lg:py-4 border-2 rounded-xl lg:rounded-2xl shadow-md hover:shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2 group ${
                         isCopied ? "bg-accent text-bg-dark border-accent" : "bg-zinc-900 border-bg-dark hover:bg-zinc-800 text-white"
                       }`}
                     >
@@ -475,7 +475,7 @@ export function CertificatePreview({ certificate, isOpen, onClose, onDelete }: C
                     <a 
                       href={previewUrl || "#"} 
                       download={`${certificate.title.replace(/\\s+/g, '_')}.pdf`}
-                      className="btn-primary flex-1 py-3 lg:py-4 text-[10px] flex items-center justify-center gap-2 rounded-xl lg:rounded-2xl shadow-[4px_4px_0_#000] lg:shadow-[6px_6px_0_#000]"
+                      className="btn-primary flex-1 py-3 lg:py-4 text-[10px] flex items-center justify-center gap-2 rounded-xl lg:rounded-2xl shadow-md hover:shadow-lg active:scale-95 transition-all"
                     >
                       <Download className="w-4 h-4 lg:w-5 lg:h-5" />
                       <span className="hidden sm:inline">DOWNLOAD PDF ARTIFACT</span>
@@ -484,7 +484,7 @@ export function CertificatePreview({ certificate, isOpen, onClose, onDelete }: C
                     {onDelete && (
                       <button 
                         onClick={() => setShowConfirmPrune(true)}
-                        className="flex-1 py-3 lg:py-4 text-[10px] flex items-center justify-center gap-2 rounded-xl lg:rounded-2xl border-2 border-bg-dark bg-red-500 text-white font-black uppercase tracking-widest shadow-[4px_4px_0_#000] lg:shadow-[6px_6px_0_#000] hover:bg-red-600 transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+                        className="flex-1 py-3 lg:py-4 text-[10px] flex items-center justify-center gap-2 rounded-xl lg:rounded-2xl border-2 border-bg-dark bg-red-500 text-white font-black uppercase tracking-widest shadow-md hover:shadow-lg hover:bg-red-600 transition-all active:scale-95"
                       >
                         <ShieldAlert className="w-4 h-4 lg:w-5 lg:h-5" />
                         <span className="hidden sm:inline">PRUNE ARTIFACT</span>

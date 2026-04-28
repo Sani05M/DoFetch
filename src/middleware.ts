@@ -14,17 +14,25 @@ export default clerkMiddleware(async (auth, req) => {
 
   // 1. Handle authenticated users on the landing page
   if (userId && url === "/") {
-    // Fetch fresh user data to ensure we have the correct email for routing
     const client = await clerkClient();
     const user = await client.users.getUser(userId);
     const email = user.primaryEmailAddress?.emailAddress;
+    const role = user.publicMetadata?.role;
 
+    // Priority 1: Use the explicit role from metadata if they've finished onboarding
+    if (role === "student") {
+      return NextResponse.redirect(new URL("/student/dashboard", req.url));
+    } else if (role === "faculty") {
+      return NextResponse.redirect(new URL("/faculty/dashboard", req.url));
+    }
+
+    // Priority 2: Guess based on institutional domain for new users
     if (email?.endsWith("@stu.adamasuniversity.ac.in")) {
       return NextResponse.redirect(new URL("/student/dashboard", req.url));
     } else if (email?.endsWith("@adamasuniversity.ac.in")) {
       return NextResponse.redirect(new URL("/faculty/dashboard", req.url));
     } else {
-      // Default fallback for authenticated users with unknown domains
+      // Default fallback: New user with non-institutional email
       return NextResponse.redirect(new URL("/onboarding", req.url));
     }
   }

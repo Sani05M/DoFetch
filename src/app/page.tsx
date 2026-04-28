@@ -22,13 +22,17 @@ import {
   Heart,
   ArrowRight
 } from "lucide-react";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import { motion, AnimatePresence } from "framer-motion";
 import { AnimatedSection, containerVariants, itemVariants } from "@/components/AnimatedSection";
-import { UserButton, SignedIn, SignedOut } from "@clerk/nextjs";
+import { UserButton, SignedIn, SignedOut, useUser } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
+  const { isLoaded, isSignedIn, user } = useUser();
+  const router = useRouter();
+
+  // Redirection is now handled by Middleware to prevent flicker and unauthorized access
 
   return (
     <div className="min-h-screen bg-bg-base text-text-primary font-sans selection:bg-accent selection:text-bg-dark">
@@ -50,30 +54,39 @@ export default function Home() {
           </div>
 
           <div className="flex items-center gap-3 md:gap-4">
-            <ThemeToggle />
+            <div className="hidden sm:block" />
             <div className="hidden sm:flex items-center gap-4">
-              <Link href="/login/faculty" className="text-xs md:text-sm font-black uppercase tracking-tight hover:text-accent transition-colors">
-                Faculty
-              </Link>
-              
               <SignedIn>
-                <div className="p-1 rounded-xl border border-border bg-bg-surface shadow-sm">
-                  <UserButton 
-                    appearance={{
-                      elements: {
-                        userButtonAvatarBox: "w-8 h-8 md:w-9 md:h-9 rounded-lg",
-                      }
-                    }}
-                  />
+                <div className="flex items-center gap-4">
+                  <Link 
+                    href="/onboarding" 
+                    className="text-xs md:text-sm font-black uppercase tracking-tight hover:text-accent transition-colors"
+                  >
+                    Dashboard
+                  </Link>
+                  <div className="p-1 rounded-xl border border-border bg-bg-surface shadow-sm">
+                    <UserButton 
+                      appearance={{
+                        elements: {
+                          userButtonAvatarBox: "w-8 h-8 md:w-9 md:h-9 rounded-lg",
+                        }
+                      }}
+                    />
+                  </div>
                 </div>
               </SignedIn>
 
               <SignedOut>
-                <motion.div whileTap={{ scale: 0.95 }}>
-                  <Link href="/login/student" className="bg-accent text-[#000] px-5 md:px-6 py-2.5 rounded-xl text-xs md:text-sm font-black shadow-[4px_4px_0px_#000] border-2 border-bg-dark block transition-all hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_#000]">
-                    Vault
+                <div className="flex items-center gap-4">
+                  <Link href="/login/faculty" className="text-xs md:text-sm font-black uppercase tracking-tight hover:text-accent transition-colors">
+                    Faculty
                   </Link>
-                </motion.div>
+                  <motion.div whileTap={{ scale: 0.95 }}>
+                    <Link href="/login/student" className="bg-accent text-[#000] px-5 md:px-6 py-2.5 rounded-xl text-xs md:text-sm font-black shadow-[4px_4px_0px_#000] border-2 border-bg-dark block transition-all hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_#000]">
+                      Vault
+                    </Link>
+                  </motion.div>
+                </div>
               </SignedOut>
             </div>
             

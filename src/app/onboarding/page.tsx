@@ -8,6 +8,17 @@ import { ChevronRight, GraduationCap, Briefcase, Loader2, Database } from "lucid
 export default function OnboardingPage() {
   const { user, isLoaded } = useUser();
   const router = useRouter();
+
+  React.useEffect(() => {
+    if (isLoaded && user?.publicMetadata?.onboardingComplete) {
+      const isStudent = user.primaryEmailAddress?.emailAddress?.endsWith("@stu.adamasuniversity.ac.in");
+      if (isStudent) {
+        router.push("/student/dashboard");
+      } else {
+        router.push("/faculty/dashboard");
+      }
+    }
+  }, [isLoaded, user, router]);
   
   const [loading, setLoading] = useState(false);
   const [fullName, setFullName] = useState(user?.fullName || "");

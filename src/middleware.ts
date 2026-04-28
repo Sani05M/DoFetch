@@ -1,4 +1,4 @@
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { clerkMiddleware, createRouteMatcher, clerkClient } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
 // Public routes that don't require authentication
@@ -9,29 +9,44 @@ const isPublicRoute = createRouteMatcher([
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
+  const { userId, sessionClaims } = await auth();
+  const url = req.nextUrl.pathname;
+
+  // 1. Handle authenticated users on the landing page
+  if (userId && url === "/") {
+    // Fetch fresh user data to ensure we have the correct email for routing
+    const client = await clerkClient();
+    const user = await client.users.getUser(userId);
+    const email = user.primaryEmailAddress?.emailAddress;
+
+    if (email?.endsWith("@stu.adamasuniversity.ac.in")) {
+      return NextResponse.redirect(new URL("/student/dashboard", req.url));
+    } else if (email?.endsWith("@adamasuniversity.ac.in")) {
+      return NextResponse.redirect(new URL("/faculty/dashboard", req.url));
+    } else {
+      // Default fallback for authenticated users with unknown domains
+      return NextResponse.redirect(new URL("/onboarding", req.url));
+    }
+  }
+
+  // 2. Protect non-public routes
   if (!isPublicRoute(req)) {
-    const { userId, sessionClaims } = await auth();
-    
-    // 1. Force Login
     if (!userId) {
       return (await auth()).redirectToSignIn();
     }
 
     const email = sessionClaims?.email as string;
 
-    // 2. Adamas University Domain Lock
+    // Adamas University Domain Lock
     if (email) {
       const isStudent = email.endsWith("@stu.adamasuniversity.ac.in");
       const isFaculty = email.endsWith("@adamasuniversity.ac.in");
 
       if (!isStudent && !isFaculty) {
-        // Log them out or send to unauthorized if not an Adamas account
         return NextResponse.redirect(new URL("/login?error=unauthorized_domain", req.url));
       }
 
-      // 3. Auto-Redirect based on Domain (Role Logic)
-      const url = req.nextUrl.pathname;
-      
+      // Role-based path protection
       if (isStudent && url.startsWith("/faculty")) {
         return NextResponse.redirect(new URL("/student/dashboard", req.url));
       }

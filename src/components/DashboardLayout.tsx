@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useAuth, Role } from "@/context/AuthContext";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
-import { Zap, LayoutGrid, Plus, ShieldCheck, Layers, RefreshCcw } from "lucide-react";
+import { Zap, LayoutGrid, Plus, ShieldCheck, Layers, RefreshCcw, Lock } from "lucide-react";
 import { motion } from "framer-motion";
 import { UserButton, useUser } from "@clerk/nextjs";
+import { ProfileEditModal } from "@/components/ProfileEditModal";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -20,6 +21,8 @@ export function DashboardLayout({ children, allowedRole, onRefresh, isRefreshing
   const { user: clerkUser, isLoaded: clerkLoaded } = useUser();
   const router = useRouter();
   const pathname = usePathname();
+  const [profileModalOpen, setProfileModalOpen] = useState(false);
+  const [editsRemaining, setEditsRemaining] = useState<number | null>(null);
 
   useEffect(() => {
     if (!isLoading && !user) {
@@ -32,6 +35,15 @@ export function DashboardLayout({ children, allowedRole, onRefresh, isRefreshing
       }
     }
   }, [user, isLoading, clerkUser, clerkLoaded, allowedRole, router]);
+
+  // Pre-fetch edits remaining for the lock icon
+  useEffect(() => {
+    if (!user) return;
+    fetch("/api/profile/update")
+      .then((r) => r.json())
+      .then((d) => { if (!d.error) setEditsRemaining(d.editsRemaining); })
+      .catch(() => {});
+  }, [user]);
 
   if (isLoading || !user || user.role !== allowedRole) {
     return (
@@ -110,14 +122,21 @@ export function DashboardLayout({ children, allowedRole, onRefresh, isRefreshing
               </motion.button>
             )}
 
-            {/* Role tag — highlighted accent for student, red for faculty */}
-            <div className={`hidden xs:flex items-center px-3 py-1.5 rounded-xl border-2 border-bg-dark text-[9px] font-black uppercase tracking-widest shadow-[2px_2px_0_#000] ${
-              user.role === "faculty"
-                ? "bg-[#ef4444] text-white"
-                : "bg-accent text-bg-dark"
-            }`}>
+            {/* Role tag — clickable, opens ProfileEditModal, locks when quota 0 */}
+            <motion.button
+              onClick={() => setProfileModalOpen(true)}
+              whileTap={{ x: 2, y: 2 }}
+              whileHover={{ scale: 1.03 }}
+              title={editsRemaining === 0 ? "Profile locked — no edits remaining" : "Edit your profile"}
+              className={`hidden xs:flex items-center gap-1.5 px-3 py-1.5 rounded-xl border-2 border-bg-dark text-[9px] font-black uppercase tracking-widest shadow-[2px_2px_0_#000] hover:shadow-[3px_3px_0_#000] transition-all ${
+                user.role === "faculty"
+                  ? "bg-[#ef4444] text-white"
+                  : "bg-accent text-bg-dark"
+              }`}
+            >
+              {editsRemaining === 0 && <Lock className="w-3 h-3" />}
               {user.role === "faculty" ? "Authority" : "Student"}
-            </div>
+            </motion.button>
 
             {/* Clerk avatar — has sign out built in */}
             <div className="p-1 rounded-xl bg-bg-surface border-2 border-border flex items-center justify-center hover:border-bg-dark hover:shadow-[2px_2px_0_#000] transition-all">
@@ -160,6 +179,12 @@ export function DashboardLayout({ children, allowedRole, onRefresh, isRefreshing
         )}
       </nav>
       
+      {/* Profile Edit Modal */}
+      <ProfileEditModal
+        isOpen={profileModalOpen}
+        onClose={() => setProfileModalOpen(false)}
+      />
+
       <main className="max-w-6xl mx-auto px-4 md:px-6 pt-20 pb-24 lg:pb-8 page-transition">
         {children}
       </main>

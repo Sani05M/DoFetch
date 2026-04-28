@@ -49,12 +49,20 @@ export default function FacultySectionsPage() {
     setMounted(true);
   }, []);
 
+  // Derive managed sections FIRST so fetchStudents can use them
+  const managedSections = user?.sectionsManaged || [];
+  const sections = ["All", ...managedSections];
+
   const fetchStudents = async () => {
+    if (managedSections.length === 0) {
+      setDbLoading(false);
+      return;
+    }
     try {
       setDbLoading(true);
       const { data, error } = await supabase
         .from("profiles")
-        .select("id, full_name, section")
+        .select("id, full_name, section, roll_no")
         .eq("role", "student")
         .in("section", managedSections);
       
@@ -62,7 +70,7 @@ export default function FacultySectionsPage() {
       
       setStudents((data || []).map(p => ({
         id: p.id,
-        rollNo: p.id.substring(0, 8).toUpperCase(),
+        rollNo: p.roll_no || p.id.substring(0, 8).toUpperCase(),
         name: p.full_name,
         section: p.section || "N/A"
       })));
@@ -73,12 +81,10 @@ export default function FacultySectionsPage() {
     }
   };
 
+  // Re-fetch whenever user (sections_managed) becomes available or changes
   React.useEffect(() => {
-    fetchStudents();
-  }, []);
-
-  const managedSections = user?.sectionsManaged || [];
-  const sections = ["All", ...managedSections];
+    if (user) fetchStudents();
+  }, [user?.sectionsManaged?.join(",")]);
 
 
   const filteredStudents = students.filter(s => {
@@ -245,9 +251,25 @@ export default function FacultySectionsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y-2 divide-border">
-                {certsLoading || dbLoading ? (
-                  Array.from({ length: 8 }).map((_, i) => <TableRowSkeleton key={i} />)
-                ) : (
+                  {certsLoading || dbLoading ? (
+                    Array.from({ length: 8 }).map((_, i) => <TableRowSkeleton key={i} />)
+                  ) : filteredStudents.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} className="px-8 py-16 text-center">
+                        <div className="flex flex-col items-center gap-3">
+                          <div className="w-12 h-12 rounded-2xl bg-bg-base border-2 border-border flex items-center justify-center">
+                            <Layers className="w-5 h-5 text-text-secondary" />
+                          </div>
+                          <p className="text-xs font-black uppercase tracking-widest text-text-secondary">
+                            No students in {activeSection === "All" ? "any managed section" : `Section ${activeSection}`} yet
+                          </p>
+                          <p className="text-[10px] text-text-secondary/50">
+                            Students will appear here once they set their section in their profile
+                          </p>
+                        </div>
+                      </td>
+                    </tr>
+                  ) : (
                   filteredStudents.map((student) => (
                     <tr 
                       key={student.rollNo} 
@@ -278,8 +300,8 @@ export default function FacultySectionsPage() {
                         </div>
                       </td>
                     </tr>
-                  ))
-                )}
+                    ))
+                  )}
               </tbody>
             </table>
           </div>
